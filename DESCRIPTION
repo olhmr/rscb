@@ -1,7 +1,7 @@
 Package: rscb
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.1.0
+Version: 0.0.0.9000
 Authors@R: person("Olle", "Hammarström", email = "olle.hammarstrom@gmail.com", 
                   role = c("aut", "cre"))
 Maintainer: The package maintainer <yourself@somewhere.net>
