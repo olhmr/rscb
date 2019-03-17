@@ -2,7 +2,7 @@
 % Please edit documentation in R/scb_search.R
 \name{scb_list}
 \alias{scb_list}
-\title{List of available tables / metadata for level}
+\title{List available tables / metadata for level}
 \usage{
 scb_list(lang = "en", database_id = "ssd", levels = NULL)
 }

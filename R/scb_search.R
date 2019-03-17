@@ -44,3 +44,36 @@ scb_list <- function(lang = "en", database_id = "ssd", levels = NULL) {
   return(parsed)
 
 }
+#' Search for directory or table in database
+#'
+#' @param lang "en" English or "sv" Swedish
+#' @param database_id Database to search
+#' @param search_term Text to search for in directory and table names
+#' @export
+scb_search <- function(lang = "en", database_id = "ssd", search_term) {
+
+  # Validate language input
+  if (!grepl(pattern = "^en$|^se$", x = lang)) {
+    stop("The lang parameter must be either \"en\" (English) or \"sv\" (Swedish)")
+  }
+
+}
+#' Create directory and table list for quick searches
+#'
+#' Creates a dataset that can be saved in /data and used for quick searches.
+#' Needed since the SCB API limits requests to maximum 10 per 10 seconds, which
+#' makes ad hoc searching slow.
+#'
+#' @param lang "en" English or "sv" Swedish
+#' @param database_id Database to search
+scb_create_cached_data <- function(lang = "en", database_id = "ssd") {
+
+  # Validate language input
+  if (!grepl(pattern = "^en$|^se$", x = lang)) {
+    stop("The lang parameter must be either \"en\" (English) or \"sv\" (Swedish)")
+  }
+
+  # Iterate through database using scb_list, adding each database / table name
+  # to the dataset as we go, then save to /data
+
+}
