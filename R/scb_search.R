@@ -19,8 +19,9 @@
 #' @param lang "en" English or "sv" Swedish
 #' @param database_id Database to search
 #' @param levels Path to search in database; requires database_id to be defined
-#' @return A data frame containing the requested directory or a list containing
-#'   metadata for the specified table
+#' @return A data frame containing the requested directory, a list containing
+#'   metadata for the specified table, or, if status code from GET is not 200,
+#'   the status code from the GET call
 #' @examples
 #' scb_list()
 #' scb_list(levels = "AM/AM0101/AM0101A")
@@ -36,12 +37,21 @@ scb_list <- function(lang = "en", database_id = "ssd", levels = NULL) {
   # Create request url
   api_url <- paste0("http://api.scb.se/OV0104/v1/doris/", lang, "/", database_id, "/", levels)
 
-  # GET and parse response
+  # GET response and check status
   response <- httr::GET(url = api_url)
-  parsed <- jsonlite::parse_json(json = response, simplifyVector = TRUE)
+  status <- response$status
+  if (status == 200) {
 
-  # Return parsed response
-  return(parsed)
+    # Status good - parse and return response
+    parsed <- jsonlite::parse_json(json = response, simplifyVector = TRUE)
+    return(parsed)
+
+  } else {
+
+    # Status bad - return status code
+    return(paste0("Unexpected status code from GET: ", status))
+
+  }
 
 }
 #' Search for directory or table in database
@@ -61,19 +71,65 @@ scb_search <- function(lang = "en", database_id = "ssd", search_term) {
 #' Create directory and table list for quick searches
 #'
 #' Creates a dataset that can be saved in /data and used for quick searches.
-#' Needed since the SCB API limits requests to maximum 10 per 10 seconds, which
-#' makes ad hoc searching slow.
+#' Needed since API requests make searching slow, and the SCB API limits
+#' requests to maximum 10 per 10 seconds, which making it even slower.
 #'
 #' @param lang "en" English or "sv" Swedish
 #' @param database_id Database to search
-scb_create_cached_data <- function(lang = "en", database_id = "ssd") {
+scb_create_cache <- function(lang = "en", database_id = "ssd") {
 
   # Validate language input
   if (!grepl(pattern = "^en$|^sv$", x = lang)) {
     stop("The lang parameter must be either \"en\" (English) or \"sv\" (Swedish)")
   }
 
+  # Set up container
+  cache <- data.frame(id = character(), level = numeric(), text = character(), stringsAsFactors = FALSE)
+
+  # Initial list is highest directory in database
+  cur_dir_list <- scb_list()
+  cache <- rbind(cache, data.frame(id = cur_dir_list$id,
+                                   level = 1,
+                                   text = cur_dir_list$text, stringsAsFactors = FALSE))
+
   # Iterate through database using scb_list, adding each database / table name
-  # to the dataset as we go, then save to /data
+  # to the dataset as we go, then save to /data This should be redone as a
+  # recursive function, and should add better control over how many requests are
+  # submitted in each 10 second window to maximise performance, as well as
+  # checking for levels dynamically (not all paths have the same number of
+  # levels)
+  for (cur_id_1 in cache[cache$level == 1, ]$id) {
+
+    cur_dir_list <- scb_list(lang = lang,
+                             database_id = database_id,
+                             levels = cur_id_1)
+    cache <- rbind(cache, data.frame(id = paste0(cur_id_1, "/", cur_dir_list$id),
+                                     level = 2,
+                                     text = cur_dir_list$text, stringsAsFactors = FALSE))
+
+    for (cur_id_2 in cache[cache$level == 2, ]$id) {
+
+      cur_dir_list <- scb_list(lang = lang,
+                               database_id = database_id,
+                               levels = paste0(cur_id_1, "/", cur_id_2))
+      if (cur_dir_list == 429) {
+
+        # Too many requests (SCB limits to 10 per 10 seconds)
+        # Wait and retry
+        Sys.sleep(10)
+        cur_dir_list <- scb_list(lang = lang,
+                                 database_id = database_id,
+                                 levels = paste0(cur_id_1, "/", cur_id_2))
+
+      }
+      cache <- rbind(cache, data.frame(id = paste0(cur_id_1, "/", cur_id_2, "/", cur_dir_list$id),
+                                       level = 3,
+                                       text = cur_dir_list$text, stringsAsFactors = FALSE))
+
+    }
+
+  }
+
+  return(cache)
 
 }

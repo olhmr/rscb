@@ -14,8 +14,9 @@ scb_list(lang = "en", database_id = "ssd", levels = NULL)
 \item{levels}{Path to search in database; requires database_id to be defined}
 }
 \value{
-A data frame containing the requested directory or a list containing
-  metadata for the specified table
+A data frame containing the requested directory, a list containing
+  metadata for the specified table, or, if status code from GET is not 200,
+  the status code from the GET call
 }
 \description{
 By default, will return a list of all highest-level directories, in English,
