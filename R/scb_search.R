@@ -76,6 +76,7 @@ scb_search <- function(lang = "en", database_id = "ssd", search_term) {
 #'
 #' @param lang "en" English or "sv" Swedish
 #' @param database_id Database to search
+#' @export
 scb_create_cache <- function(lang = "en", database_id = "ssd") {
 
   # Validate language input
@@ -112,14 +113,22 @@ scb_create_cache <- function(lang = "en", database_id = "ssd") {
       cur_dir_list <- scb_list(lang = lang,
                                database_id = database_id,
                                levels = paste0(cur_id_1, "/", cur_id_2))
-      if (cur_dir_list == 429) {
+      if (!is.data.frame(cur_dir_list)) {
 
-        # Too many requests (SCB limits to 10 per 10 seconds)
-        # Wait and retry
-        Sys.sleep(10)
-        cur_dir_list <- scb_list(lang = lang,
-                                 database_id = database_id,
-                                 levels = paste0(cur_id_1, "/", cur_id_2))
+        if (cur_dir_list == "Unexpected status code from GET: 429") {
+
+          # Too many requests (SCB limits to 10 per 10 seconds)
+          # Wait and retry
+          Sys.sleep(10)
+          cur_dir_list <- scb_list(lang = lang,
+                                   database_id = database_id,
+                                   levels = paste0(cur_id_1, "/", cur_id_2))
+
+        } else {
+
+          stop(cur_dir_list)
+
+        }
 
       }
       cache <- rbind(cache, data.frame(id = paste0(cur_id_1, "/", cur_id_2, "/", cur_dir_list$id),
