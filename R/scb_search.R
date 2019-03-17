@@ -29,7 +29,7 @@
 scb_list <- function(lang = "en", database_id = "ssd", levels = NULL) {
 
   # Validate language input
-  if (!grepl(pattern = "^en$|^se$", x = lang)) {
+  if (!grepl(pattern = "^en$|^sv$", x = lang)) {
     stop("The lang parameter must be either \"en\" (English) or \"sv\" (Swedish)")
   }
 
@@ -53,7 +53,7 @@ scb_list <- function(lang = "en", database_id = "ssd", levels = NULL) {
 scb_search <- function(lang = "en", database_id = "ssd", search_term) {
 
   # Validate language input
-  if (!grepl(pattern = "^en$|^se$", x = lang)) {
+  if (!grepl(pattern = "^en$|^sv$", x = lang)) {
     stop("The lang parameter must be either \"en\" (English) or \"sv\" (Swedish)")
   }
 
@@ -69,7 +69,7 @@ scb_search <- function(lang = "en", database_id = "ssd", search_term) {
 scb_create_cached_data <- function(lang = "en", database_id = "ssd") {
 
   # Validate language input
-  if (!grepl(pattern = "^en$|^se$", x = lang)) {
+  if (!grepl(pattern = "^en$|^sv$", x = lang)) {
     stop("The lang parameter must be either \"en\" (English) or \"sv\" (Swedish)")
   }
 
