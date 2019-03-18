@@ -76,6 +76,8 @@ scb_search <- function(lang = "en", database_id = "ssd", search_term) {
 #'
 #' @param lang "en" English or "sv" Swedish
 #' @param database_id Database to search
+#' @return data.frame showing ID, type, depth, and text description of each
+#'   directory, subdirectory, and table in the database, to be saved in /data
 #' @export
 scb_create_cache <- function(lang = "en", database_id = "ssd") {
 
@@ -88,52 +90,91 @@ scb_create_cache <- function(lang = "en", database_id = "ssd") {
   cache <- data.frame(id = character(), level = numeric(), text = character(), stringsAsFactors = FALSE)
 
   # Initial list is highest directory in database
+  call_tracker <- update_call_tracker()
   cur_dir_list <- scb_list()
   cache <- rbind(cache, data.frame(id = cur_dir_list$id,
-                                   level = 1,
+                                   type = cur_dir_list$type,
+                                   depth = 1,
                                    text = cur_dir_list$text, stringsAsFactors = FALSE))
 
-  # Iterate through database using scb_list, adding each database / table name
-  # to the dataset as we go, then save to /data This should be redone as a
-  # recursive function, and should add better control over how many requests are
-  # submitted in each 10 second window to maximise performance, as well as
-  # checking for levels dynamically (not all paths have the same number of
-  # levels)
-  for (cur_id_1 in cache[cache$level == 1, ]$id) {
+  # Recursively iterate through directories and subdirectories For each item in
+  # cur_dir_list, check type: if l, then it is a directory and we call the
+  # add_to_cache function on it (and then repeat the procedure for any
+  # subdirectories, etc.). If t, then it is a table and we skip to the next in
+  # the list.
+  for (i in 1:dim(cur_dir_list)[1]) {
 
+    call_tracker <- update_call_tracker(call_tracker)
+    cache <- add_to_cache(cache, lang, database_id,
+                          levels = cur_dir_list[i, ]$id,
+                          depth = 1, call_tracker)
+
+  }
+
+  return(cache)
+
+}
+#' Add scb_list call to cache
+#'
+#' Given a list of highest level directories from scb_create_cache(), the
+#' function goes through each directory and subdirectory in turn, cataloging
+#' each level and storing it in memory, which is then returned.
+#'
+#' @param cache Current cache
+#' @param lang Language: should be inherited
+#' @param database_id Database to search: should be inherited
+#' @param levels Path for querying with scb_list()
+#' @param depth How deep in the subdirectories we are
+#' @param call_tracker Current call_tracker instance: should be created in
+#'   scb_create_cache()
+#' @return data.frame showing ID, type, depth, and text description of each
+#'   directory, subdirectory, and table in the database
+add_to_cache <- function(cache, lang, database_id, levels, depth, call_tracker) {
+
+  # Call scb_list: if 429 response, wait for cache to clear then continue
+  while (TRUE) {
+
+    call_tracker <- update_call_tracker()
     cur_dir_list <- scb_list(lang = lang,
                              database_id = database_id,
-                             levels = cur_id_1)
-    cache <- rbind(cache, data.frame(id = paste0(cur_id_1, "/", cur_dir_list$id),
-                                     level = 2,
-                                     text = cur_dir_list$text, stringsAsFactors = FALSE))
+                             levels = levels)
 
-    for (cur_id_2 in cache[cache$level == 2, ]$id) {
+    if (!is.data.frame(cur_dir_list)) {
 
-      cur_dir_list <- scb_list(lang = lang,
-                               database_id = database_id,
-                               levels = paste0(cur_id_1, "/", cur_id_2))
-      if (!is.data.frame(cur_dir_list)) {
+      if (cur_dir_list == "Unexpected status code from GET: 429") {
 
-        if (cur_dir_list == "Unexpected status code from GET: 429") {
+        # Wait for call_tracker to clear
+        Sys.sleep(difftime(Sys.time(), call_tracker[which.max(call_tracker$timestamp), ]))
 
-          # Too many requests (SCB limits to 10 per 10 seconds)
-          # Wait and retry
-          Sys.sleep(10)
-          cur_dir_list <- scb_list(lang = lang,
-                                   database_id = database_id,
-                                   levels = paste0(cur_id_1, "/", cur_id_2))
+      } else {
 
-        } else {
-
-          stop(cur_dir_list)
-
-        }
+        stop("Unknown error in scb_list() call in add_to_cache()")
 
       }
-      cache <- rbind(cache, data.frame(id = paste0(cur_id_1, "/", cur_id_2, "/", cur_dir_list$id),
-                                       level = 3,
-                                       text = cur_dir_list$text, stringsAsFactors = FALSE))
+
+    } else {
+
+      break
+
+    }
+
+  }
+
+  # Add to cache
+  cache <- rbind(cache, data.frame(id = paste0(levels, "/", cur_dir_list$id),
+                                   depth = depth + 1,
+                                   type = cur_dir_list$type,
+                                   text = cur_dir_list$text,
+                                   stringsAsFactors = FALSE))
+
+  # Call add_to_cache() on all subdirectories
+  for (i in 1:dim(cur_dir_list)[1]) {
+
+    if (cur_dir_list[i, ]$type == "l") {
+
+      cache <- add_to_cache(cache, lang, database_id,
+                            levels = paste0(levels, "/", cur_dir_list[i, ]$id),
+                            depth, call_tracker)
 
     }
 

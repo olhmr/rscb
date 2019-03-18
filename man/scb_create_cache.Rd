@@ -11,6 +11,10 @@ scb_create_cache(lang = "en", database_id = "ssd")
 
 \item{database_id}{Database to search}
 }
+\value{
+data.frame showing ID, type, depth, and text description of each
+  directory, subdirectory, and table in the database, to be saved in /data
+}
 \description{
 Creates a dataset that can be saved in /data and used for quick searches.
 Needed since API requests make searching slow, and the SCB API limits
