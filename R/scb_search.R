@@ -144,7 +144,8 @@ add_to_cache <- function(cache, lang, database_id, levels, depth, call_tracker) 
       if (cur_dir_list == "Unexpected status code from GET: 429") {
 
         # Wait for call_tracker to clear
-        Sys.sleep(difftime(Sys.time(), call_tracker[which.max(call_tracker$timestamp), ]))
+        time_to_sleep <- difftime(Sys.time(), call_tracker[which.min(call_tracker$timestamp), ])
+        Sys.sleep(time_to_sleep)
 
       } else {
 
