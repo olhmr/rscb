@@ -1,15 +1,15 @@
 #' List available tables / metadata for level
 #'
 #' By default, will return a list of all highest-level directories, in English,
-#' in the ssb database. If additional levels are provided, all subdirectories to
+#' in the ssb database. If additional ids are provided, all subdirectories to
 #' the specified path will be shown.
 #'
 #' The database_id parameter should normally not be touched; at the moment of
-#' this writing, only the ssd database can be queried. The levels parameter
+#' this writing, only the ssd database can be queried. The ids parameter
 #' should be provided as a path, e.g. "AM/AM0101/AM0101A", where each element of
 #' the path refers to an ID. The IDs can most easily be determined by
-#' sequentially searching through the different levels, starting with the one
-#' provided by the default call, where levels = NULL.
+#' sequentially searching through the different id, starting with the one
+#' provided by the default call, where id = NULL.
 #'
 #' The function uses the httr package to submit the API request, and jsonlite to
 #' parse the response, which is then returned. If an individual table is
@@ -18,16 +18,16 @@
 #'
 #' @param lang "en" English or "sv" Swedish
 #' @param database_id Database to search
-#' @param levels Path to search in database; requires database_id to be defined
+#' @param id Path to search in database; requires database_id to be defined
 #' @return A data frame containing the requested directory, a list containing
 #'   metadata for the specified table, or, if status code from GET is not 200,
 #'   the status code from the GET call
 #' @examples
 #' scb_list()
-#' scb_list(levels = "AM/AM0101/AM0101A")
-#' scb_list(lang = "sv", levels = "LE")
+#' scb_list(id = "AM/AM0101/AM0101A")
+#' scb_list(lang = "sv", id = "LE")
 #' @export
-scb_list <- function(lang = "en", database_id = "ssd", levels = NULL) {
+scb_list <- function(lang = "en", database_id = "ssd", id = NULL) {
 
   # Validate language input
   if (!grepl(pattern = "^en$|^sv$", x = lang)) {
@@ -35,7 +35,7 @@ scb_list <- function(lang = "en", database_id = "ssd", levels = NULL) {
   }
 
   # Create request url
-  api_url <- paste0("http://api.scb.se/OV0104/v1/doris/", lang, "/", database_id, "/", levels)
+  api_url <- paste0("http://api.scb.se/OV0104/v1/doris/", lang, "/", database_id, "/", id)
 
   # GET response and check status
   response <- httr::GET(url = api_url)
@@ -134,7 +134,7 @@ scb_create_cache <- function(lang = "en", database_id = "ssd") {
 
     call_tracker <- update_call_tracker(call_tracker)
     cache <- add_to_cache(cache, lang, database_id,
-                          levels = cur_dir_list[i, ]$id,
+                          id = cur_dir_list[i, ]$id,
                           depth = 1, call_tracker)
 
   }
@@ -151,13 +151,13 @@ scb_create_cache <- function(lang = "en", database_id = "ssd") {
 #' @param cache Current cache
 #' @param lang Language: should be inherited
 #' @param database_id Database to search: should be inherited
-#' @param levels Path for querying with scb_list()
+#' @param id Path for querying with scb_list()
 #' @param depth How deep in the subdirectories we are
 #' @param call_tracker Current call_tracker instance: should be created in
 #'   scb_create_cache()
 #' @return data.frame showing ID, type, depth, and text description of each
 #'   directory, subdirectory, and table in the database
-add_to_cache <- function(cache, lang, database_id, levels, depth, call_tracker) {
+add_to_cache <- function(cache, lang, database_id, id, depth, call_tracker) {
 
   # Call scb_list: if 429 response, wait for cache to clear then continue
   while (TRUE) {
@@ -165,7 +165,7 @@ add_to_cache <- function(cache, lang, database_id, levels, depth, call_tracker) 
     call_tracker <- update_call_tracker(call_tracker)
     cur_dir_list <- scb_list(lang = lang,
                              database_id = database_id,
-                             levels = levels)
+                             id = id)
 
     if (!is.data.frame(cur_dir_list)) {
 
@@ -190,7 +190,7 @@ add_to_cache <- function(cache, lang, database_id, levels, depth, call_tracker) 
   }
 
   # Add to cache
-  cache <- rbind(cache, data.frame(id = paste0(levels, "/", cur_dir_list$id),
+  cache <- rbind(cache, data.frame(id = paste0(id, "/", cur_dir_list$id),
                                    depth = depth + 1,
                                    type = cur_dir_list$type,
                                    text = cur_dir_list$text,
@@ -202,7 +202,7 @@ add_to_cache <- function(cache, lang, database_id, levels, depth, call_tracker) 
     if (cur_dir_list[i, ]$type == "l") {
 
       cache <- add_to_cache(cache, lang, database_id,
-                            levels = paste0(levels, "/", cur_dir_list[i, ]$id),
+                            id = paste0(id, "/", cur_dir_list[i, ]$id),
                             depth, call_tracker)
 
     }

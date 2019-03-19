@@ -4,7 +4,7 @@
 \alias{add_to_cache}
 \title{Add scb_list call to cache}
 \usage{
-add_to_cache(cache, lang, database_id, levels, depth, call_tracker)
+add_to_cache(cache, lang, database_id, id, depth, call_tracker)
 }
 \arguments{
 \item{cache}{Current cache}
@@ -13,7 +13,7 @@ add_to_cache(cache, lang, database_id, levels, depth, call_tracker)
 
 \item{database_id}{Database to search: should be inherited}
 
-\item{levels}{Path for querying with scb_list()}
+\item{id}{Path for querying with scb_list()}
 
 \item{depth}{How deep in the subdirectories we are}
 

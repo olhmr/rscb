@@ -4,14 +4,14 @@
 \alias{scb_list}
 \title{List available tables / metadata for level}
 \usage{
-scb_list(lang = "en", database_id = "ssd", levels = NULL)
+scb_list(lang = "en", database_id = "ssd", id = NULL)
 }
 \arguments{
 \item{lang}{"en" English or "sv" Swedish}
 
 \item{database_id}{Database to search}
 
-\item{levels}{Path to search in database; requires database_id to be defined}
+\item{id}{Path to search in database; requires database_id to be defined}
 }
 \value{
 A data frame containing the requested directory, a list containing
@@ -20,16 +20,16 @@ A data frame containing the requested directory, a list containing
 }
 \description{
 By default, will return a list of all highest-level directories, in English,
-in the ssb database. If additional levels are provided, all subdirectories to
+in the ssb database. If additional ids are provided, all subdirectories to
 the specified path will be shown.
 }
 \details{
 The database_id parameter should normally not be touched; at the moment of
-this writing, only the ssd database can be queried. The levels parameter
+this writing, only the ssd database can be queried. The ids parameter
 should be provided as a path, e.g. "AM/AM0101/AM0101A", where each element of
 the path refers to an ID. The IDs can most easily be determined by
-sequentially searching through the different levels, starting with the one
-provided by the default call, where levels = NULL.
+sequentially searching through the different id, starting with the one
+provided by the default call, where id = NULL.
 
 The function uses the httr package to submit the API request, and jsonlite to
 parse the response, which is then returned. If an individual table is
@@ -38,6 +38,6 @@ than a directory list.
 }
 \examples{
 scb_list()
-scb_list(levels = "AM/AM0101/AM0101A")
-scb_list(lang = "sv", levels = "LE")
+scb_list(id = "AM/AM0101/AM0101A")
+scb_list(lang = "sv", id = "LE")
 }
