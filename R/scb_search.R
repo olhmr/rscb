@@ -83,7 +83,7 @@ scb_search <- function(search_term, cached_directory = NULL,
 
   } else {
 
-    filtered <- cached_directory[type == directory_or_table, ]
+    filtered <- cached_directory[cached_directory$type == directory_or_table, ]
 
   }
 
