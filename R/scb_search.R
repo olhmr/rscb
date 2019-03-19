@@ -56,11 +56,17 @@ scb_list <- function(lang = "en", database_id = "ssd", levels = NULL) {
 }
 #' Search for directory or table in database
 #'
-#' @param lang "en" English or "sv" Swedish
-#' @param database_id Database to search
+#' Currently only cached search implemented, and thus requires cached_directory,
+#' created by scb_create_cache(), as an argument. This will be amended in the
+#' future to provide search through uncached directory
+#'
+#' @param lang "en" English or "sv" Swedish : currently not used
+#' @param database_id Database to search : currently not used
+#' @param cached_directory Created by scb_create_cache
 #' @param search_term Text to search for in directory and table names
+#' @param directory_or_table Indicate what type of item you are looking for
 #' @export
-scb_search <- function(lang = "en", database_id = "ssd", search_term) {
+scb_search <- function(lang = "en", database_id = "ssd", cached_directory, search_term, directory_or_table = "any") {
 
   # Validate language input
   if (!grepl(pattern = "^en$|^sv$", x = lang)) {
