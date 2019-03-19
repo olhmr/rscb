@@ -14,3 +14,5 @@ RoxygenNote: 6.1.1
 Imports:
     httr,
     jsonlite
+Depends:
+    R (>= 2.10)
