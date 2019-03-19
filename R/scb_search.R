@@ -60,18 +60,40 @@ scb_list <- function(lang = "en", database_id = "ssd", levels = NULL) {
 #' created by scb_create_cache(), as an argument. This will be amended in the
 #' future to provide search through uncached directory
 #'
-#' @param lang "en" English or "sv" Swedish : currently not used
-#' @param database_id Database to search : currently not used
+#' @param search_term Regex to search for in directory and table names
 #' @param cached_directory Created by scb_create_cache
-#' @param search_term Text to search for in directory and table names
-#' @param directory_or_table Indicate what type of item you are looking for
+#' @param ignore_case Instruction passed to grepl
+#' @param directory_or_table "any", "l" (directory), or "t" (table)
 #' @export
-scb_search <- function(lang = "en", database_id = "ssd", cached_directory, search_term, directory_or_table = "any") {
+scb_search <- function(search_term, cached_directory = NULL,
+                       ignore_case = FALSE, directory_or_table = "any") {
 
-  # Validate language input
-  if (!grepl(pattern = "^en$|^sv$", x = lang)) {
-    stop("The lang parameter must be either \"en\" (English) or \"sv\" (Swedish)")
+  # Check for cached directory
+  if (is.null(cached_directory)) {
+
+    load("data/scb_directory_cache.rda")
+    cached_directory <- scb_directory_cache
+
   }
+
+  # Filter according to directory_or_table
+  if (directory_or_table == "any") {
+
+    filtered <- cached_directory
+
+  } else {
+
+    filtered <- cached_directory[type == directory_or_table, ]
+
+  }
+
+  # Search
+  results <- filtered[grepl(pattern = search_term,
+                            x = cached_directory$text,
+                            ignore.case = ignore_case), ]
+
+  # Return
+  return(results)
 
 }
 #' Create directory and table list for quick searches
