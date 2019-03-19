@@ -134,7 +134,7 @@ add_to_cache <- function(cache, lang, database_id, levels, depth, call_tracker) 
   # Call scb_list: if 429 response, wait for cache to clear then continue
   while (TRUE) {
 
-    call_tracker <- update_call_tracker()
+    call_tracker <- update_call_tracker(call_tracker)
     cur_dir_list <- scb_list(lang = lang,
                              database_id = database_id,
                              levels = levels)
