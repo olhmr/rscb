@@ -13,6 +13,20 @@ update_call_tracker(tracker = NULL)
 Data frame containing currently tracked calls
 }
 \description{
-Manages SCB limit of 10 calls per 10 seconds to ensure smooth running of
-functions reliant on API calls.
+Manages list of all API calls made in the last 10 seconds. If no tracker is
+provided, a new one is returned. If an already existing tracker is passed as
+an arugment to the function, the function will add a new call to it, then
+remove all items with a timestamp > 10 seconds from current time.
+}
+\details{
+The SCB API limits calls to 10 per 10 seconds (rolling). If this number is
+exceeded, httr::GET returns a 429 response. We could use Sys.sleep(10) when
+this occurs to reset the counter, but this would be inefficient: since the
+limit is rolling, we should only wait until the oldest call is > 10 seconds
+in the past, and then attempt a new query. This is what this function
+facilitates.
+
+Ideally, we would make this function less general (such as making updating
+the tracked call list optional), and handle the validation step outside of
+the function, but this will do for now.
 }
