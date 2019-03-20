@@ -12,7 +12,7 @@
   \item{text}{Information on database / table}
 }}
 \source{
-rscb::scb_create_cache()
+rscb::scb_create_directory_cache()
 }
 \usage{
 scb_directory_cache
