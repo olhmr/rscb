@@ -138,6 +138,49 @@ scb_create_cache <- function(lang = "en", database_id = "ssd") {
                           depth = 1, call_tracker)
 
   }
+  
+  # Now run through tables and store metadata
+  # First create container
+  cache$metadata <- NA
+  for (i in 1:nrow(cache)) {
+    
+    if (cache[i, ]$type == "t") {
+      
+      # Call scb_list: if 429 response, wait for cache to clear then continue
+      while (TRUE) {
+        
+        call_tracker <- update_call_tracker(call_tracker)
+        cur_metadata <- scb_list(lang = lang, 
+                                 database_id = database_id, 
+                                 id = cache[i, ]$id)
+        
+        if (!is.list(cur_metadata)) {
+          
+          if (cur_metadata == "Unexpected status code from GET: 429") {
+            
+            # Wait for call_tracker to clear
+            time_to_sleep <- difftime(Sys.time(), call_tracker[which.min(call_tracker$timestamp), ])
+            Sys.sleep(time_to_sleep)
+            
+          } else {
+            
+            stop("Unknown error in scb_list() call in add_to_cache()")
+            
+          }
+          
+        } else {
+          
+          break
+          
+        }
+        
+      }
+      
+      cache[i, ]$metadata <- list(cur_metadata)
+      
+    }
+
+  }
 
   return(cache)
 
