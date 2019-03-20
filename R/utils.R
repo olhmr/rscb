@@ -43,3 +43,38 @@ update_call_tracker <- function(tracker = NULL) {
   return(tracker)
 
 }
+#' Convert metadata to intelligible data frame
+#'
+#' @param id Identifier to locate in database listing
+#' @param metadata Metadata returned from scb_list() query with table id
+#' @return Data table containing id, name, variables, and values for table
+interpet_table_metadata <- function(id, metadata) {
+
+  # Store table title
+  table_name <- metadata$title
+
+  # Convert variables to data.table to make unlisting easy
+  table_vars <- as.data.table(metadata$variables)
+
+  # Check existence of fields - add dummy if not
+  if (!"code" %in% names(table_vars)) {table_vars[, code := NA]}
+  if (!"text" %in% names(table_vars)) {table_vars[, text := NA]}
+  if (!"values" %in% names(table_vars)) {table_vars[, values := NA]}
+  if (!"valueTexts" %in% names(table_vars)) {table_vars[, valueTexts := NA]}
+  if (!"elimination" %in% names(table_vars)) {table_vars[, elimination := NA]}
+  if (!"time" %in% names(table_vars)) {table_vars[, time := NA]}
+
+  # Unlist fields
+  table_vars <- table_vars[, .(values = unlist(values),
+                               valueTexts = unlist(valueTexts),
+                               elimination, time),
+                           by = .(code, text)]
+
+  # Bind together
+  table_joined <- table_vars[, .(id, table_name, code, text,
+                                 values, valueTexts, elimination, time)]
+
+  # Return
+  return(table_joined)
+
+}
