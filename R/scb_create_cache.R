@@ -78,7 +78,7 @@ scb_create_table_cache <- function(lang = "en", database_id = "ssd",
   }
 
   # Set up container
-  cache <- data.table(id = character(), table_name = character(), code = character(),
+  cache <- data.frame(id = character(), table_name = character(), code = character(),
                       text = character(), values = character(), valueTexts = character(),
                       elimination = logical(), time = logical())
 
@@ -111,7 +111,7 @@ scb_create_table_cache <- function(lang = "en", database_id = "ssd",
 
             # Table not found, probably because of out of date directory
             # Create fake metadata file with NAs, then break
-            cur_metadata <- data.table(id = cached_directory[i, ]$id,
+            cur_metadata <- data.frame(id = cached_directory[i, ]$id,
                                        table_name = cached_directory[i, ]$text,
                                        code = NA, text = NA, values = NA, valueTexts = NA,
                                        elimination = NA, time = NA)
@@ -135,13 +135,13 @@ scb_create_table_cache <- function(lang = "en", database_id = "ssd",
       }
 
       setTxtProgressBar(progress_bar, i)
-      cache <- rbindlist(l = list(cache, cur_metadata))
+      cache <- rbind(cache, cur_metadata)
 
     }
 
   }
 
-  return(scb_table_cache)
+  return(cache)
 
 }
 #' Add scb_list call to directory cache
