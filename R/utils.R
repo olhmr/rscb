@@ -48,13 +48,23 @@ update_call_tracker <- function(tracker = NULL) {
 #' @param id Identifier to locate in database listing
 #' @param metadata Metadata returned from scb_list() query with table id
 #' @return Data table containing id, name, variables, and values for table
+#' @import data.table
 interpet_table_metadata <- function(id, metadata) {
+  
+  # Check if data.table is attached - if not, attach it, and detach later
+  detach_flag <- FALSE
+  if (!"data.table" %in% (.packages())) {
+    
+    library(data.table)
+    detach_flag <- TRUE
+    
+  }
 
   # Store table title
   table_name <- metadata$title
 
   # Convert variables to data.table to make unlisting easy
-  table_vars <- as.data.table(metadata$variables)
+  table_vars <- data.table::as.data.table(metadata$variables)
 
   # Check existence of fields - add dummy if not
   if (!"code" %in% names(table_vars)) {table_vars[, code := NA]}
@@ -65,14 +75,21 @@ interpet_table_metadata <- function(id, metadata) {
   if (!"time" %in% names(table_vars)) {table_vars[, time := NA]}
 
   # Unlist fields
-  table_vars <- table_vars[, .(values = unlist(values),
-                               valueTexts = unlist(valueTexts),
-                               elimination, time),
-                           by = .(code, text)]
+  table_vars <- table_vars[, list(values = unlist(values),
+                                  valueTexts = unlist(valueTexts),
+                                  elimination, time),
+                           by = list(code, text)]
 
   # Bind together
   table_joined <- table_vars[, .(id, table_name, code, text,
                                  values, valueTexts, elimination, time)]
+  
+  # Return global environment to previous state, if necessary
+  if (detach_flag) {
+    
+    detach("package:data.table")
+    
+  }
 
   # Return
   return(table_joined)
