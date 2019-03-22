@@ -2,21 +2,20 @@
 % Please edit documentation in R/scb_create_cache.R
 \name{scb_create_cache}
 \alias{scb_create_cache}
-\title{Create directory and table list for quick searches}
+\title{New function for caching}
 \usage{
-scb_create_cache(lang = "en", database_id = "ssd")
+scb_create_cache(lang = "en", database_id = "ssd", initial_id = "")
 }
 \arguments{
-\item{lang}{"en" English or "sv" Swedish}
+\item{lang}{Supported languages: "en" English}
 
-\item{database_id}{Database to search}
+\item{database_id}{Supported databases: "ssd"}
+
+\item{initial_id}{From where to start caching: default top level}
 }
 \value{
-data.frame showing ID, type, depth, and text description of each
-  directory, subdirectory, and table in the database, to be saved in /data
+Cached database containing directory structure and table metadata
 }
 \description{
-Creates a dataset that can be saved in /data and used for quick searches.
-Needed since API requests make searching slow, and the SCB API limits
-requests to maximum 10 per 10 seconds, which making it even slower.
+Caches both directories and tables into one, and does so more efficiently.
 }

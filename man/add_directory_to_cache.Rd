@@ -2,7 +2,7 @@
 % Please edit documentation in R/scb_create_cache.R
 \name{add_directory_to_cache}
 \alias{add_directory_to_cache}
-\title{Add scb_list call to directory cache}
+\title{Add scb_list() call to cache}
 \usage{
 add_directory_to_cache(cache, lang, database_id, id, depth, call_tracker)
 }
@@ -15,17 +15,15 @@ add_directory_to_cache(cache, lang, database_id, id, depth, call_tracker)
 
 \item{id}{Path for querying with scb_list()}
 
-\item{depth}{How deep in the subdirectories we are}
+\item{depth}{Current depth: 1 = top level directory}
 
-\item{call_tracker}{Current call_tracker instance: should be created in
-scb_create_cache()}
+\item{call_tracker}{Current call_tracker instance}
 }
 \value{
-data.frame showing ID, type, depth, and text description of each
-  directory, subdirectory, and table in the database
+data.frame showing ID, depth, type, and name of each directory,
+  subdirectory, and table, with tables also including information on
+  variables contained
 }
 \description{
-Given a list of highest level directories from scb_create_cache(), the
-function goes through each directory and subdirectory in turn, cataloging
-each level and storing it in memory, which is then returned.
+Add scb_list() call to cache
 }
