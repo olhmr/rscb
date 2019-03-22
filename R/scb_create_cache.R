@@ -86,7 +86,7 @@ scb_create_table_cache <- function(lang = "en", database_id = "ssd",
   call_tracker <- update_call_tracker() # Slightly inefficient
 
   # Loop through directory
-  progress_bar <- txtProgressBar(min = 0, max = nrow(cached_directory), initial = 0)
+  progress_bar <- utils::txtProgressBar(min = 0, max = nrow(cached_directory), initial = 0)
   for (i in 1:nrow(cached_directory)) {
 
     if (cached_directory[i, ]$type == "t") {
@@ -134,7 +134,7 @@ scb_create_table_cache <- function(lang = "en", database_id = "ssd",
 
       }
 
-      setTxtProgressBar(progress_bar, i)
+      utils::setTxtProgressBar(progress_bar, i)
       cache <- rbind(cache, cur_metadata)
 
     }
