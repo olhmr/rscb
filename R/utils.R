@@ -74,6 +74,38 @@ interpet_table_metadata <- function(id, metadata) {
   return(table_joined)
 
 }
+#' Extract pertinent information from table metadata
+#'
+#' Takes the results from an scb_list() call to the table id and converts to a
+#' more intelligible format.
+#'
+#' @param metadata Output from scb_list() call with table id as argument
+#' @return data.frame containing pertinent data
+#' @export
+interpret_table_variables <- function(table_vars) {
+
+  # Create output container
+  extract <- data.frame(date_range_start = NA, date_range_end = NA)
+
+  # Find time component; if none, keep NA
+  # Relies on fact that only one variable can be time
+  if ("time" %in% names(table_vars)) {
+
+    # Store time values
+    time_values <- table_vars$values[which(vars$time)]
+
+    # Assume ordered list for now
+    time_start <- time_values[1]
+    time_end <- time_values[length(time_values)]
+
+    # Insert conversion to date objects
+
+    extract[1, ]$date_range_start <- time_start
+    extract[1, ]$date_range_end <- time_end
+
+  }
+
+}
 #' Try scb_list() and catch 429 responses
 #'
 #' @param lang Language
