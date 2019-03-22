@@ -74,3 +74,45 @@ interpet_table_metadata <- function(id, metadata) {
   return(table_joined)
 
 }
+#' Try scb_list() and catch 429 responses
+#'
+#' @param lang Language
+#' @param database_id Database
+#' @param id ID to query
+#' @param call_tracker Current call tracker
+#' @return Valid response from scb_list()
+try_scb_list <- function(lang, database_id, id, call_tracker) {
+
+  # Call scb_list: if 429 response, wait for cache to clear then continue
+  while (TRUE) {
+
+    call_tracker <- update_call_tracker(call_tracker)
+    cur_dir <- scb_list(lang = lang,
+                        database_id = database_id,
+                        id = id)
+
+    if (!is.data.frame(cur_dir) & !is.list(cur_dir)) {
+
+      if (cur_dir == "Unexpected status code from GET: 429") {
+
+        # Wait for call_tracker to clear
+        time_to_sleep <- difftime(Sys.time(), call_tracker[which.min(call_tracker$timestamp), ])
+        Sys.sleep(time_to_sleep)
+
+      } else {
+
+        stop("Unknown error in scb_list() call in add_directory_to_cache()")
+
+      }
+
+    } else {
+
+      break
+
+    }
+
+  }
+
+  return(cur_dir)
+
+}
