@@ -22,13 +22,13 @@
 #' @format A data frame with x rows and 8 columns:
 #' \describe{
 #'   \item{id}{id to use to query table}
-#'   \item{name}{name of table}
+#'   \item{table_name}{name of table}
 #'   \item{code}{variable code}
 #'   \item{text}{description of variable}
-#'   \item{values}{possible values for variable}
-#'   \item{valueText}{description of value}
 #'   \item{elimination}{aggregation behaviour}
 #'   \item{time}{indicates variable contains time data}
+#'   \item{values}{possible values for variable}
+#'   \item{valueTexts}{description of value}
 #' }
 #' @source rscb::scb_create_table_cache()
 "scb_table_cache"
