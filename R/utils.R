@@ -79,31 +79,68 @@ interpet_table_metadata <- function(id, metadata) {
 #' Takes the results from an scb_list() call to the table id and converts to a
 #' more intelligible format.
 #'
-#' @param metadata Output from scb_list() call with table id as argument
+#' @param table_vars From scb_list() call to table ID (select $variables)
 #' @return data.frame containing pertinent data
-#' @export
 interpret_table_variables <- function(table_vars) {
 
   # Create output container
-  extract <- data.frame(date_range_start = NA, date_range_end = NA)
+  extract <- data.frame(variable_descriptions = NA, value_descriptions = NA,
+                        date_range_start = NA, date_range_end = NA, stringsAsFactors = FALSE)
+  time_index <- NA
 
   # Find time component; if none, keep NA
   # Relies on fact that only one variable can be time
+  # Replace with listing of years with data (no months)
   if ("time" %in% names(table_vars)) {
 
+    # Store time index
+    time_index <- which(table_vars$time)
+
     # Store time values
-    time_values <- table_vars$values[which(vars$time)]
+    time_values <- table_vars$values[time_index]
 
     # Assume ordered list for now
-    time_start <- time_values[1]
-    time_end <- time_values[length(time_values)]
-
-    # Insert conversion to date objects
-
-    extract[1, ]$date_range_start <- time_start
-    extract[1, ]$date_range_end <- time_end
+    time_start <- time_values[[1]][1]
+    time_end <- time_values[[1]][length(time_values[[1]])]
 
   }
+
+  # Find text description of variables, excluding time
+  if ("text" %in% names(table_vars)) {
+
+    if (is.na(time_index)) {
+
+      variable_descriptions <- list(table_vars$text)
+
+    } else {
+
+      variable_descriptions <- list(table_vars$text[-time_index])
+
+    }
+
+  }
+
+  # Find text description of variable values, excluding time
+  if ("valueTexts" %in% names(table_vars)) {
+
+    if (is.na(time_index)) {
+
+      value_descriptions <- list(table_vars$valueTexts)
+
+    } else {
+
+      value_descriptions <- list(table_vars$valueTexts[-time_index])
+
+    }
+
+  }
+
+  extract$variable_descriptions <- variable_descriptions
+  extract$value_descriptions <- value_descriptions
+  extract$date_range_start <- time_start
+  extract$date_range_end <- time_end
+
+  return(extract)
 
 }
 #' Try scb_list() and catch 429 responses

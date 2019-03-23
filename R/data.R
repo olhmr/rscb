@@ -6,16 +6,14 @@
 #'
 #' @format A data frame with x rows and 10 columns:
 #' \describe{
-#'   \item{id}{id to use to query directory or table}
+#'   \item{id}{ID to use to query directory or table}
 #'   \item{depth}{1 = highest level directory, incremented for each subdirectory}
-#'   \item{type}{l for directory, t for table},
-#'   \item{name}{Information on database / table}
-#'   \item{var_codes}{codes in table}
-#'   \item{var_names}{names of codes in table}
-#'   \item{var_values}{values in table}
-#'   \item{var_value_names}{names of values in table}
-#'   \item{var_elims}{indicates whether variable can be elimated}
-#'   \item{var_times}{indicates whether variable is a valid time dimension}
+#'   \item{type}{l for directory, t for table}
+#'   \item{name}{Name of directory / table}
+#'   \item{var_desc}{Variables in table}
+#'   \item{val_desc}{Values in table}
+#'   \item{date_start}{First time entry in table}
+#'   \item{date_end}{Last time entry in table}
 #' }
 #' @source rscb::scb_create_directory_cache()
 "scb_cache"

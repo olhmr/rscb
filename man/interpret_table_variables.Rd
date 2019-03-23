@@ -7,7 +7,7 @@
 interpret_table_variables(table_vars)
 }
 \arguments{
-\item{metadata}{Output from scb_list() call with table id as argument}
+\item{table_vars}{From scb_list() call to table ID (select $variables)}
 }
 \value{
 data.frame containing pertinent data

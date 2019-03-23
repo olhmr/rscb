@@ -15,21 +15,19 @@ scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") 
                       depth = numeric(),
                       type = character(),
                       name = character(),
-                      var_codes = list(),
-                      var_names = list(),
-                      var_values = list(),
-                      var_value_names = list(),
-                      var_elims = list(),
-                      var_times = list(),
+                      var_desc = character(),
+                      val_desc = character(),
+                      date_start = character(),
+                      date_end = character(),
                       stringsAsFactors = FALSE)
 
   # Initialise
   call_tracker <- update_call_tracker()
-  cur_dir <- scb_list(lang = lang, database_id = database_id, id = initial_id)
+  cur_dir <- try_scb_list(lang = lang, database_id = database_id,
+                          id = initial_id, call_tracker = call_tracker)
   cache <- rbind(cache, data.frame(id = cur_dir$id, depth = 1, type = cur_dir$type,
-                                   name = cur_dir$text, var_codes = NA, var_names = NA,
-                                   var_values = NA, var_value_names = NA,
-                                   var_elims = NA, var_times = NA,
+                                   name = cur_dir$text, var_desc = NA, val_desc = NA,
+                                   date_start = NA, date_end = NA,
                                    stringsAsFactors = FALSE))
 
   # Loop through top level directory specified by initial_id
@@ -46,17 +44,16 @@ scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") 
     } else if (cur_dir[i, ]$type == "t") {
 
       # Get variables
-      vars <- scb_list(lang = lang, database_id = database_id,
-                       id = paste0(initial_id, "/", cur_dir[i, ]$id))$variables
+      vars <- try_scb_list(lang = lang, database_id = database_id,
+                       id = paste0(initial_id, "/", cur_dir[i, ]$id),
+                       call_tracker = call_tracker)$variables
 
       # Store in cache
-      # Must be a more elegant way to do this
-      if ("code" %in% names(vars)) {cache[cache$id == cur_dir[i, ]$id, ]$var_codes <- list(vars$code)}
-      if ("text" %in% names(vars)) {cache[cache$id == cur_dir[i, ]$id, ]$var_names <- list(vars$text)}
-      if ("values" %in% names(vars)) {cache[cache$id == cur_dir[i, ]$id, ]$var_values <- list(vars$values)}
-      if ("valueTexts" %in% names(vars)) {cache[cache$id == cur_dir[i, ]$id, ]$var_value_names <- list(vars$valueTexts)}
-      if ("elimination" %in% names(vars)) {cache[cache$id == cur_dir[i, ]$id, ]$var_elims <- list(vars$elimination)}
-      if ("time" %in% names(vars)) {cache[cache$id == cur_dir[i, ]$id, ]$var_times <- list(vars$time)}
+      vars_interpreted <- interpret_table_variables(vars)
+      cache[cache$id == cur_dir[i, ]$id, ]$var_desc <- vars_interpeted$variable_descriptions
+      cache[cache$id == cur_dir[i, ]$id, ]$val_desc <- vars_interpreted$value_descriptions
+      cache[cache$id == cur_dir[i, ]$id, ]$date_start <- vars_interpreted$date_range_start
+      cache[cache$id == cur_dir[i, ]$id, ]$date_end <- vars_interpreted$date_end_start
 
     }
 
@@ -86,10 +83,9 @@ add_directory_to_cache <- function(cache, lang, database_id, id, depth, call_tra
   # Create dummy cache to bind
   tmp_cache <- data.frame(id = paste0(id, "/", cur_dir$id),
                           depth = depth + 1, type = cur_dir$type,
-                          name = cur_dir$text, var_codes = NA,
-                          var_names = NA, var_values = NA,
-                          var_value_names = NA, var_elims = NA,
-                          var_times = NA, stringsAsFactors = FALSE)
+                          name = cur_dir$text, var_desc = NA,
+                          val_desc = NA, date_start = NA,
+                          date_end = NA, stringsAsFactors = FALSE)
 
   # Add to cache
   cache <- rbind(cache, tmp_cache)
@@ -111,13 +107,11 @@ add_directory_to_cache <- function(cache, lang, database_id, id, depth, call_tra
                            id = tmp_cache[i, ]$id, call_tracker = call_tracker)$variables
 
       # Store in cache
-      # Must be a more elegant way to do this
-      if ("code" %in% names(vars)) {cache[cache$id == tmp_cache[i, ]$id, ]$var_codes <- list(vars$code)}
-      if ("text" %in% names(vars)) {cache[cache$id == tmp_cache[i, ]$id, ]$var_names <- list(vars$text)}
-      if ("values" %in% names(vars)) {cache[cache$id == tmp_cache[i, ]$id, ]$var_values <- list(vars$values)}
-      if ("valueTexts" %in% names(vars)) {cache[cache$id == tmp_cache[i, ]$id, ]$var_value_names <- list(vars$valueTexts)}
-      if ("elimination" %in% names(vars)) {cache[cache$id == tmp_cache[i, ]$id, ]$var_elims <- list(vars$elimination)}
-      if ("time" %in% names(vars)) {cache[cache$id == tmp_cache[i, ]$id, ]$var_times <- list(vars$time)}
+      vars_interpreted <- interpret_table_variables(vars)
+      cache[cache$id == tmp_cache[i, ]$id, ]$var_desc <- vars_interpreted$variable_descriptions
+      cache[cache$id == tmp_cache[i, ]$id, ]$val_desc <- vars_interpreted$value_descriptions
+      cache[cache$id == tmp_cache[i, ]$id, ]$date_start <- vars_interpreted$date_range_start
+      cache[cache$id == tmp_cache[i, ]$id, ]$date_end <- vars_interpreted$date_range_end
 
     } else {
 
