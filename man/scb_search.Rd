@@ -4,17 +4,26 @@
 \alias{scb_search}
 \title{Search for directory or table in database}
 \usage{
-scb_search(search_term, cached_directory = NULL, ignore_case = FALSE,
-  directory_or_table = "any")
+scb_search(search_id = NULL, search_type = NULL, search_name = NULL,
+  search_var_desc = NULL, search_val_desc = NULL, search_year = NULL,
+  cached_database = NULL, ignore_case = FALSE)
 }
 \arguments{
-\item{search_term}{Regex to search for in directory and table names}
+\item{search_id}{Directory / table ID path}
 
-\item{cached_directory}{Created by scb_create_cache}
+\item{search_type}{Directory "l" or table "t"}
+
+\item{search_name}{Text in directory or table name}
+
+\item{search_var_desc}{Text in variable descriptions: table only}
+
+\item{search_val_desc}{Text in value descriptions: table only}
+
+\item{search_year}{Year for which there is data: table only}
+
+\item{cached_database}{Created by scb_create_cache}
 
 \item{ignore_case}{Instruction passed to grepl}
-
-\item{directory_or_table}{"any", "l" (directory), or "t" (table)}
 }
 \description{
 Currently only cached search implemented, and thus requires cached_directory,

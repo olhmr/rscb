@@ -60,39 +60,59 @@ scb_list <- function(lang = "en", database_id = "ssd", id = NULL) {
 #' created by scb_create_cache(), as an argument. This will be amended in the
 #' future to provide search through uncached directory
 #'
-#' @param search_term Regex to search for in directory and table names
-#' @param cached_directory Created by scb_create_cache
+#' @param search_id Directory / table ID path
+#' @param search_type Directory "l" or table "t"
+#' @param search_name Text in directory or table name
+#' @param search_var_desc Text in variable descriptions: table only
+#' @param search_val_desc Text in value descriptions: table only
+#' @param search_year Year for which there is data: table only
+#' @param cached_database Created by scb_create_cache
 #' @param ignore_case Instruction passed to grepl
-#' @param directory_or_table "any", "l" (directory), or "t" (table)
 #' @export
-scb_search <- function(search_term, cached_directory = NULL,
-                       ignore_case = FALSE, directory_or_table = "any") {
+scb_search <- function(search_id = NULL, search_type = NULL, search_name = NULL,
+                       search_var_desc = NULL, search_val_desc = NULL,
+                       search_year = NULL,
+                       cached_database = NULL,
+                       ignore_case = FALSE) {
+
+  # Warn for illogical arguments
+  if (!is.null(search_type)) {
+
+    if (search_type != "t" & (!is.null(search_var_desc) | !is.null(search_val_desc)
+                              | !is.null(search_year))) {
+
+      warning("Only tables will be returned when variables, values, and years are searched for.")
+      search_type <- "t"
+
+    }
+
+  } else if (!is.null(search_var_desc) | !is.null(search_val_desc)
+             | !is.null(search_year)) {
+
+    warning("Only tables will be returned when variables, values, and years are searched for.")
+    search_type <- "t"
+
+  }
+
 
   # Check for cached directory
-  if (is.null(cached_directory)) {
+  if (is.null(cached_database)) {
 
-    load("data/scb_directory_cache.rda")
-    cached_directory <- scb_directory_cache
-
-  }
-
-  # Filter according to directory_or_table
-  if (directory_or_table == "any") {
-
-    filtered <- cached_directory
-
-  } else {
-
-    filtered <- cached_directory[cached_directory$type == directory_or_table, ]
+    load("data/scb_cache.rda")
+    cached_database <- scb_cache
 
   }
 
-  # Search
-  results <- filtered[grepl(pattern = search_term,
-                            x = cached_directory$text,
-                            ignore.case = ignore_case), ]
+  # Filter according to search terms; start with type
+  output <- cached_database
+  if (!is.null(search_type)) {output <- output[output$type == search_type, ]}
+  if (!is.null(search_id)) {output <- output[grepl(pattern = search_id, x = output$id, ignore.case = ignore_case), ]}
+  if (!is.null(search_name)) {output <- output[grepl(pattern = search_name, x = output$name, ignore.case = ignore_case), ]}
+  if (!is.null(search_var_desc)) {output <- output[grepl(pattern = search_var_desc, x = output$var_desc, ignore.case = ignore_case), ]}
+  if (!is.null(search_val_desc)) {ouput <- output[grepl(pattern = search_val_desc, x = output$val_desc, ignore.case = ignore_case), ]}
+  # Make special handling of years
 
   # Return
-  return(results)
+  return(output)
 
 }
