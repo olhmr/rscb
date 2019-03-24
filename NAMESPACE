@@ -2,4 +2,5 @@
 
 export(scb_create_cache)
 export(scb_list)
+export(scb_query)
 export(scb_search)
