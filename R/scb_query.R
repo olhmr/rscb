@@ -15,21 +15,26 @@ scb_query <- function(table_id, ..., lang = "en", database_id = "ssd") {
   args <- list(...)
 
   # Construct data frame
-  body_from_args <- data.frame(code = character(),
-                               selection.filter = character(),
-                               selection.values = character(),
-                               stringsAsFactors = FALSE)
+  body_from_args <- data.frame()
+
   for (i in 1:length(args)) {
 
-    tmp_frame <- data.frame(code = args[[i]]$code, selection.filter = args[[i]]$filter,
-                            stringsAsFactors = FALSE)
-    tmp_frame$selection.values <- list(args[[i]]$values) # Needed to ensure stored as vector
-    body_from_args <- rbind(body_from_args, tmp_frame)
+    # Create main data.frame
+    tmp_main <- data.frame(code = args[[i]]$code, stringsAsFactors = FALSE)
+
+    # Create selection data.frame
+    tmp_sel <- data.frame(filter = args[[i]]$filter, stringsAsFactors = FALSE)
+    tmp_sel$values <- list(args[[i]]$values)
+
+    # Join up
+    tmp_main$selection <- tmp_sel
+
+    body_from_args <- rbind(body_from_args, tmp_main)
 
   }
 
   # Add response
-  response <- list(format = "json")
+  response <- list(format = "csv")
   query_list <- list(query = body_from_args, response = response)
 
   # Convert to JSON
@@ -37,8 +42,8 @@ scb_query <- function(table_id, ..., lang = "en", database_id = "ssd") {
 
   # Correct response; API does not recognise square brackets in response format
   query_json <- stringr::str_replace(string = query_json,
-                                     pattern = "\"response\":\\{\"format\":\\[\"json\"\\]\\}",
-                                     replacement = "\"response\":\\{\"format\":\"json\"\\}")
+                                     pattern = "\"response\":\\{\"format\":\\[\"csv\"\\]\\}",
+                                     replacement = "\"response\":\\{\"format\":\"csv\"\\}")
 
   # Send query
   response <- httr::POST(url = api_url, body = query_json)
