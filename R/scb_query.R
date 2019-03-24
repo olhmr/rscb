@@ -14,28 +14,29 @@ scb_query <- function(table_id, ..., lang = "en", database_id = "ssd") {
   # Unpack arguments list
   args <- list(...)
 
-  # Construct data frame
-  body_from_args <- data.frame()
+  # Construct containers
+  main_frame <- data.frame()
+  sel_frame <- data.frame()
 
+  # Iterate through argument list
   for (i in 1:length(args)) {
 
-    # Create main data.frame
-    tmp_main <- data.frame(code = args[[i]]$code, stringsAsFactors = FALSE)
+    # Main data.frame
+    main_frame <- rbind(main_frame, data.frame(code = args[[i]]$code, stringsAsFactors = FALSE))
 
-    # Create selection data.frame
+    # Selection data.frame
     tmp_sel <- data.frame(filter = args[[i]]$filter, stringsAsFactors = FALSE)
     tmp_sel$values <- list(args[[i]]$values)
-
-    # Join up
-    tmp_main$selection <- tmp_sel
-
-    body_from_args <- rbind(body_from_args, tmp_main)
+    sel_frame <- rbind(sel_frame, tmp_sel)
 
   }
 
+  # Join up
+  main_frame$selection <- sel_frame
+
   # Add response
   response <- list(format = "csv")
-  query_list <- list(query = body_from_args, response = response)
+  query_list <- list(query = main_frame, response = response)
 
   # Convert to JSON
   query_json <- jsonlite::toJSON(query_list)
@@ -51,32 +52,6 @@ scb_query <- function(table_id, ..., lang = "en", database_id = "ssd") {
   # Check and format response
 
   # Return results
-
-
-  # Create query string
-  # Get arguments from user
-  # Push to list / data frame structure (see from)
-  # Correct response with str_replace from stringr
-  # Send to server
-  # Dummy
-  # query_string <- "{ \"query\": [{\"code\":\"Fodelseland\", \"selection\":{\"filter\":\"item\", \"values\":[\"010\",\"020\"]}},
-  #                              {\"code\":\"Alder\", \"selection\":{\"filter\":\"all\", \"values\":[\"*\"]}},
-  #                              {\"code\":\"Tid\", \"selection\":{ \"filter\":\"top\", \"values\":[\"3\"]}}],
-  #   \"response\": {\"format\":\"csv\"} }"
-
-  # "{ \"query\": [{\"code\":\"Fodelseland\", \"selection\":{\"filter\":\"item\", \"values\":[\"010\",\"020\"]}},
-  #          {\"code\":\"Tid\", \"selection\":{ \"filter\":\"top\", \"values\":[\"3\"]}}],
-  # \"response\": {\"format\":\"csv\"} }"
-
-  # Replace response as incorrectly formatted when using jsonlite::toJSON
-  # str_replace(to, "\"response\":\\{\"format\":\\[\"csv\"\\]\\}", "\"response\":\\{\"format\":\"csv\"\\}")
-
-  # Send query
-  # response <- httr::POST(url = api_url, body = query_string)
-
-  # Format response
-
-  # Return
   return(response)
 
 }
