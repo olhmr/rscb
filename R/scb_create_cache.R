@@ -50,7 +50,7 @@ scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") 
 
       # Store in cache
       vars_interpreted <- interpret_table_variables(vars)
-      cache[cache$id == cur_dir[i, ]$id, ]$var_desc <- vars_interpeted$variable_descriptions
+      cache[cache$id == cur_dir[i, ]$id, ]$var_desc <- vars_interpreted$variable_descriptions
       cache[cache$id == cur_dir[i, ]$id, ]$val_desc <- vars_interpreted$value_descriptions
       cache[cache$id == cur_dir[i, ]$id, ]$date_start <- vars_interpreted$date_range_start
       cache[cache$id == cur_dir[i, ]$id, ]$date_end <- vars_interpreted$date_end_start
