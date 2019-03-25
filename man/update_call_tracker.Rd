@@ -7,7 +7,7 @@
 update_call_tracker(tracker = NULL)
 }
 \arguments{
-\item{tracker}{The current tracking data}
+\item{tracker}{Currently tracked calls}
 }
 \value{
 Data frame containing currently tracked calls
@@ -15,8 +15,8 @@ Data frame containing currently tracked calls
 \description{
 Manages list of all API calls made in the last 10 seconds. If no tracker is
 provided, a new one is returned. If an already existing tracker is passed as
-an arugment to the function, the function will add a new call to it, then
-remove all items with a timestamp > 10 seconds from current time.
+an argument to the function, the function will add a new call to it, then
+remove all items with a timestamp > 10 seconds from current system time.
 }
 \details{
 The SCB API limits calls to 10 per 10 seconds (rolling). If this number is
@@ -25,8 +25,4 @@ this occurs to reset the counter, but this would be inefficient: since the
 limit is rolling, we should only wait until the oldest call is > 10 seconds
 in the past, and then attempt a new query. This is what this function
 facilitates.
-
-Ideally, we would make this function less general (such as making updating
-the tracked call list optional), and handle the validation step outside of
-the function, but this will do for now.
 }

@@ -4,8 +4,8 @@
 #'
 #' Manages list of all API calls made in the last 10 seconds. If no tracker is
 #' provided, a new one is returned. If an already existing tracker is passed as
-#' an arugment to the function, the function will add a new call to it, then
-#' remove all items with a timestamp > 10 seconds from current time.
+#' an argument to the function, the function will add a new call to it, then
+#' remove all items with a timestamp > 10 seconds from current system time.
 #'
 #' The SCB API limits calls to 10 per 10 seconds (rolling). If this number is
 #' exceeded, httr::GET returns a 429 response. We could use Sys.sleep(10) when
@@ -14,11 +14,7 @@
 #' in the past, and then attempt a new query. This is what this function
 #' facilitates.
 #'
-#' Ideally, we would make this function less general (such as making updating
-#' the tracked call list optional), and handle the validation step outside of
-#' the function, but this will do for now.
-#'
-#' @param tracker The current tracking data
+#' @param tracker Currently tracked calls
 #' @return Data frame containing currently tracked calls
 update_call_tracker <- function(tracker = NULL) {
 
@@ -45,8 +41,12 @@ update_call_tracker <- function(tracker = NULL) {
 }
 #' Convert metadata to intelligible data frame
 #'
-#' @param id Identifier to locate in database listing
-#' @param metadata Metadata returned from scb_list() query with table id
+#' Superceded by interpret_table_variables(), which provides more efficient
+#' storage of the pertinent data contained in the metadata. Kept here in case a
+#' new use for it is discovered, but will likely be removed in a future update.
+#'
+#' @param id ID of table
+#' @param metadata Metadata returned from scb_list() call to table ID
 #' @return Data table containing id, name, variables, and values for table
 interpet_table_metadata <- function(id, metadata) {
 

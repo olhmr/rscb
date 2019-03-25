@@ -10,9 +10,13 @@ interpret_table_variables(table_vars)
 \item{table_vars}{From scb_list() call to table ID (select $variables)}
 }
 \value{
-data.frame containing pertinent data
+data.frame containing variable and value descriptions, as well as
+  start and end of date range for data
 }
 \description{
-Takes the results from an scb_list() call to the table id and converts to a
-more intelligible format.
+Calling scb_list() with a table ID as argument will return a 2-element list
+containing metadata; the title of the table, and a list of variables and
+field values present in the table. This function takes the variable portion
+of the metadata and extracts the most useful information from it, which is
+then stored in a data.frame for easy access.
 }

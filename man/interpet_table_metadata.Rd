@@ -7,13 +7,15 @@
 interpet_table_metadata(id, metadata)
 }
 \arguments{
-\item{id}{Identifier to locate in database listing}
+\item{id}{ID of table}
 
-\item{metadata}{Metadata returned from scb_list() query with table id}
+\item{metadata}{Metadata returned from scb_list() call to table ID}
 }
 \value{
 Data table containing id, name, variables, and values for table
 }
 \description{
-Convert metadata to intelligible data frame
+Superceded by interpret_table_variables(), which provides more efficient
+storage of the pertinent data contained in the metadata. Kept here in case a
+new use for it is discovered, but will likely be removed in a future update.
 }

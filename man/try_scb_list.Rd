@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{try_scb_list}
 \alias{try_scb_list}
-\title{Try scb_list() and catch 429 responses}
+\title{Try scb_list() and catch 429 response}
 \usage{
 try_scb_list(lang, database_id, id, call_tracker)
 }
@@ -19,5 +19,13 @@ try_scb_list(lang, database_id, id, call_tracker)
 Valid response from scb_list()
 }
 \description{
-Try scb_list() and catch 429 responses
+This is a wrapper for scb_list() to enable it to call repeatedly in case of a
+429 (too many requests) response is returned. Since the SCB API has a rolling
+limit of 10 call per 10 seconds, this situation will frequently occur. In
+case the response is neither a data.frame or list, the function will throw an
+error.
+}
+\details{
+There is potential to improve this, in combination with scb_list(), by having
+the latter return the status code along with the data.
 }
