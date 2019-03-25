@@ -1,7 +1,7 @@
 Package: rscb
 Type: Package
-Title: Accesses and Loads SCB Data through API
-Version: 0.0.0.9000
+Title: Access and Load SCB Data through API
+Version: 0.0.0.9001
 Authors@R: person("Olle", "Hammarström", email = "olle.hammarstrom@gmail.com", 
                   role = c("aut", "cre"))
 Maintainer: Olle Hammarström <olle.hammarstrom@gmail.com>
