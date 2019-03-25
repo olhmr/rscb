@@ -17,27 +17,27 @@
 #' @param tracker Currently tracked calls
 #' @return Data frame containing currently tracked calls
 update_call_tracker <- function(tracker = NULL) {
-
+  
   if (is.null(tracker)) {
-
+    
     # No tracker set up, create new
     tracker <- data.frame(timestamp = Sys.time(),
                           stringsAsFactors = FALSE)
-
+    
   } else {
-
+    
     # Add to current tracker
     tracker <- rbind(tracker, data.frame(timestamp = Sys.time(),
                                          stringsAsFactors = FALSE))
-
+    
     # Delete records older than 10 seconds
     tracker <- tracker[difftime(Sys.time(), tracker$timestamp) < 10, , drop = FALSE]
-
+    
   }
-
+  
   # Return new tracker
   return(tracker)
-
+  
 }
 #' Convert metadata to intelligible data frame
 #'
@@ -49,13 +49,13 @@ update_call_tracker <- function(tracker = NULL) {
 #' @param metadata Metadata returned from scb_list() call to table ID
 #' @return Data table containing id, name, variables, and values for table
 interpet_table_metadata <- function(id, metadata) {
-
+  
   # Store table title
   table_name <- metadata$title
-
+  
   # Convert variables to data.table to make unlisting easy
   table_vars <- data.frame(metadata$variables, stringsAsFactors = FALSE)
-
+  
   # Check existence of fields - add dummy if not
   if (!"code" %in% names(table_vars)) {table_vars$code <- NA}
   if (!"text" %in% names(table_vars)) {table_vars$text <- NA}
@@ -63,16 +63,16 @@ interpet_table_metadata <- function(id, metadata) {
   if (!"valueTexts" %in% names(table_vars)) {table_vars$valueTexts <- NA}
   if (!"elimination" %in% names(table_vars)) {table_vars$elimination <- NA}
   if (!"time" %in% names(table_vars)) {table_vars$time <- NA}
-
+  
   # Unlist fields
   table_vars <- tidyr::unnest(table_vars)
-
+  
   # Bind together
   table_joined <- cbind(id, table_name, table_vars)
-
+  
   # Return
   return(table_joined)
-
+  
 }
 #' Extract pertinent information from table metadata
 #'
@@ -86,66 +86,66 @@ interpet_table_metadata <- function(id, metadata) {
 #' @return data.frame containing variable and value descriptions, as well as
 #'   start and end of date range for data
 interpret_table_variables <- function(table_vars) {
-
+  
   # Create output container
   extract <- data.frame(variable_descriptions = NA, value_descriptions = NA,
                         date_range_start = NA, date_range_end = NA, stringsAsFactors = FALSE)
   time_index <- NA
-
+  
   # Find time component; if none, keep NA
   # Relies on fact that only one variable can be time
   # Replace with listing of years with data (no months)
   if ("time" %in% names(table_vars)) {
-
+    
     # Store time index
     time_index <- which(table_vars$time)
-
+    
     # Store time values
     time_values <- table_vars$values[time_index]
-
+    
     # Assume ordered list for now
     time_start <- time_values[[1]][1]
     time_end <- time_values[[1]][length(time_values[[1]])]
-
+    
   }
-
+  
   # Find text description of variables, excluding time
   if ("text" %in% names(table_vars)) {
-
+    
     if (is.na(time_index)) {
-
+      
       variable_descriptions <- list(table_vars$text)
-
+      
     } else {
-
+      
       variable_descriptions <- list(table_vars$text[-time_index])
-
+      
     }
-
+    
   }
-
+  
   # Find text description of variable values, excluding time
   if ("valueTexts" %in% names(table_vars)) {
-
+    
     if (is.na(time_index)) {
-
+      
       value_descriptions <- list(table_vars$valueTexts)
-
+      
     } else {
-
+      
       value_descriptions <- list(table_vars$valueTexts[-time_index])
-
+      
     }
-
+    
   }
-
+  
   extract$variable_descriptions <- variable_descriptions
   extract$value_descriptions <- value_descriptions
   extract$date_range_start <- time_start
   extract$date_range_end <- time_end
-
+  
   return(extract)
-
+  
 }
 #' Try scb_list() and catch 429 response
 #'
@@ -164,42 +164,42 @@ interpret_table_variables <- function(table_vars) {
 #' @param call_tracker Current call tracker
 #' @return Valid response from scb_list()
 try_scb_list <- function(lang, database_id, id, call_tracker) {
-
+  
   # Call scb_list: if 429 response, wait for cache to clear then continue
   counter <- 0 # If this reaches 50000, exit: prevents infinite loops
   while (TRUE) {
-
+    
     call_tracker <- update_call_tracker(call_tracker)
     cur_dir <- scb_list(lang = lang,
                         database_id = database_id,
                         id = id)
-
+    
     if (!is.data.frame(cur_dir) & !is.list(cur_dir)) {
-
+      
       counter <- counter + 1
       if (cur_dir == "Unexpected status code from GET: 429") {
-
+        
         # Wait for call_tracker to clear
         time_to_sleep <- difftime(Sys.time(), call_tracker[which.min(call_tracker$timestamp), ])
         Sys.sleep(time_to_sleep)
-
+        
       } else {
-
+        
         stop("Unknown error in scb_list() call in add_directory_to_cache()")
-
+        
       }
-
+      
     } else {
-
+      
       counter <- 0
       break
-
+      
     }
     
     if (counter > 49999) {stop("Loop failed to exit in try_scb_list()")}
-
+    
   }
-
+  
   return(cur_dir)
-
+  
 }
