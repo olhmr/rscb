@@ -76,11 +76,15 @@ interpet_table_metadata <- function(id, metadata) {
 }
 #' Extract pertinent information from table metadata
 #'
-#' Takes the results from an scb_list() call to the table id and converts to a
-#' more intelligible format.
+#' Calling scb_list() with a table ID as argument will return a 2-element list
+#' containing metadata; the title of the table, and a list of variables and
+#' field values present in the table. This function takes the variable portion
+#' of the metadata and extracts the most useful information from it, which is
+#' then stored in a data.frame for easy access.
 #'
 #' @param table_vars From scb_list() call to table ID (select $variables)
-#' @return data.frame containing pertinent data
+#' @return data.frame containing variable and value descriptions, as well as
+#'   start and end of date range for data
 interpret_table_variables <- function(table_vars) {
 
   # Create output container
@@ -143,7 +147,16 @@ interpret_table_variables <- function(table_vars) {
   return(extract)
 
 }
-#' Try scb_list() and catch 429 responses
+#' Try scb_list() and catch 429 response
+#'
+#' This is a wrapper for scb_list() to enable it to call repeatedly in case of a
+#' 429 (too many requests) response is returned. Since the SCB API has a rolling
+#' limit of 10 call per 10 seconds, this situation will frequently occur. In
+#' case the response is neither a data.frame or list, the function will throw an
+#' error.
+#'
+#' There is potential to improve this, in combination with scb_list(), by having
+#' the latter return the status code along with the data. 
 #'
 #' @param lang Language
 #' @param database_id Database
@@ -153,6 +166,7 @@ interpret_table_variables <- function(table_vars) {
 try_scb_list <- function(lang, database_id, id, call_tracker) {
 
   # Call scb_list: if 429 response, wait for cache to clear then continue
+  counter <- 0 # If this reaches 50000, exit: prevents infinite loops
   while (TRUE) {
 
     call_tracker <- update_call_tracker(call_tracker)
@@ -162,6 +176,7 @@ try_scb_list <- function(lang, database_id, id, call_tracker) {
 
     if (!is.data.frame(cur_dir) & !is.list(cur_dir)) {
 
+      counter <- counter + 1
       if (cur_dir == "Unexpected status code from GET: 429") {
 
         # Wait for call_tracker to clear
@@ -176,9 +191,12 @@ try_scb_list <- function(lang, database_id, id, call_tracker) {
 
     } else {
 
+      counter <- 0
       break
 
     }
+    
+    if (counter > 49999) {stop("Loop failed to exit in try_scb_list()")}
 
   }
 
