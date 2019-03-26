@@ -1,9 +1,22 @@
-#' Query a table
+#' Query a table in the SCB Database
+#'
+#' This is essentially a wrapper for httr::POST, with some more intuitive and
+#' user-friendly handling of arguments and output. The ... arguments should be
+#' named lists of the form list(code = variable_code_to_filter_on, filter =
+#' type_of_filter_to_use, values = values_to_filter_on). These are converted to
+#' JSON with the jsonlite package, and submitted as the body in httr::POST.
+#'
+#' The types of filter that can be used are: \itemize{ \item item - filter to
+#' values matching those provided \item all - wildcard selection, e.g. \* for
+#' all values, 01\* for all values starting with 01 \item top - filter to the
+#' top x records, where x is provided in values \item agg - aggregate values
+#' \item vs - comparison versus other variable }
 #'
 #' @param table_id ID path of table to query
 #' @param lang Language "en" English or "sv" Swedish
 #' @param database_id ID of database; currently only "ssd"
-#' @param ... Arguments to query table with, each like: list(code = code_to_query, filter = filter_type, values = c(values_to_filter))
+#' @param ... Arguments to query table with, each like: list(code =
+#'   code_to_query, filter = filter_type, values = c(values_to_filter))
 #' @return data.frame containing response from POST query
 #' @export
 scb_query <- function(table_id, ..., lang = "en", database_id = "ssd") {
@@ -19,16 +32,20 @@ scb_query <- function(table_id, ..., lang = "en", database_id = "ssd") {
   sel_frame <- data.frame()
 
   # Iterate through argument list
-  for (i in 1:length(args)) {
-
-    # Main data.frame
-    main_frame <- rbind(main_frame, data.frame(code = args[[i]]$code, stringsAsFactors = FALSE))
-
-    # Selection data.frame
-    tmp_sel <- data.frame(filter = args[[i]]$filter, stringsAsFactors = FALSE)
-    tmp_sel$values <- list(args[[i]]$values)
-    sel_frame <- rbind(sel_frame, tmp_sel)
-
+  if (length(args) > 0) {
+    
+    for (i in 1:length(args)) {
+      
+      # Main data.frame
+      main_frame <- rbind(main_frame, data.frame(code = args[[i]]$code, stringsAsFactors = FALSE))
+      
+      # Selection data.frame
+      tmp_sel <- data.frame(filter = args[[i]]$filter, stringsAsFactors = FALSE)
+      tmp_sel$values <- list(args[[i]]$values)
+      sel_frame <- rbind(sel_frame, tmp_sel)
+      
+    }
+    
   }
 
   # Join up
@@ -50,9 +67,18 @@ scb_query <- function(table_id, ..., lang = "en", database_id = "ssd") {
   response <- httr::POST(url = api_url, body = query_json)
 
   # Check and format response
+  if (response$status_code == 200) {
+    
+    output <- httr::content(response)
+    
+  } else {
+    
+    output <- paste0("Unexpected status code from POST: ", response$status_code)
+    
+  }
 
   # Return results
-  return(response)
+  return(output)
 
 }
 
