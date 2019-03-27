@@ -9,9 +9,9 @@ add_directory_to_cache(cache, lang, database_id, id, depth, call_tracker)
 \arguments{
 \item{cache}{Current cache}
 
-\item{lang}{Language: should be inherited}
+\item{lang}{Language: from scb_create_cache()}
 
-\item{database_id}{Database to search: should be inherited}
+\item{database_id}{Database to search: from scb_create_cache()}
 
 \item{id}{Path for querying with scb_list()}
 
@@ -25,5 +25,7 @@ data.frame showing ID, depth, type, and name of each directory,
   variables contained
 }
 \description{
-Add scb_list() call to cache
+This function makes up the main body of the scb_create_cache() function. It
+works by recursively calling scb_list(), each time adding the directory list
+and any table metadata as appropriate.
 }

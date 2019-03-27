@@ -1,12 +1,23 @@
 # Functions to cache SCB database
 
-#' New function for caching
+#' Create cache of database
 #'
-#' Caches both directories and tables into one, and does so more efficiently.
+#' Creates a local and condensed copy of the given database for the given
+#' language, with the option of starting at a particular ID path to only cache a
+#' subset of the data.
+#'
+#' The function is currently only tested with the ssd database, as that was the
+#' only one in existence at the time of writing. However, any database that
+#' follows the same structure should work. The output is condensed, with only
+#' the most pertinent information being stored, in order to minimize file size.
+#'
+#' The function works by recursively calling scb_list() and storing the results.
+#'
 #' @param lang Supported languages: "en" English
 #' @param database_id Supported databases: "ssd"
 #' @param initial_id From where to start caching: default top level
-#' @return Cached database containing directory structure and table metadata
+#' @return Cached database containing directory structure and pertinent extracts
+#'   from table metadata
 #' @export
 scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") {
 
@@ -65,9 +76,13 @@ scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") 
 }
 #' Add scb_list() call to cache
 #'
+#' This function makes up the main body of the scb_create_cache() function. It
+#' works by recursively calling scb_list(), each time adding the directory list
+#' and any table metadata as appropriate.
+#'
 #' @param cache Current cache
-#' @param lang Language: should be inherited
-#' @param database_id Database to search: should be inherited
+#' @param lang Language: from scb_create_cache()
+#' @param database_id Database to search: from scb_create_cache()
 #' @param id Path for querying with scb_list()
 #' @param depth Current depth: 1 = top level directory
 #' @param call_tracker Current call_tracker instance

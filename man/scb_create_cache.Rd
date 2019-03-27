@@ -2,7 +2,7 @@
 % Please edit documentation in R/scb_create_cache.R
 \name{scb_create_cache}
 \alias{scb_create_cache}
-\title{New function for caching}
+\title{Create cache of database}
 \usage{
 scb_create_cache(lang = "en", database_id = "ssd", initial_id = "")
 }
@@ -14,8 +14,19 @@ scb_create_cache(lang = "en", database_id = "ssd", initial_id = "")
 \item{initial_id}{From where to start caching: default top level}
 }
 \value{
-Cached database containing directory structure and table metadata
+Cached database containing directory structure and pertinent extracts
+  from table metadata
 }
 \description{
-Caches both directories and tables into one, and does so more efficiently.
+Creates a local and condensed copy of the given database for the given
+language, with the option of starting at a particular ID path to only cache a
+subset of the data.
+}
+\details{
+The function is currently only tested with the ssd database, as that was the
+only one in existence at the time of writing. However, any database that
+follows the same structure should work. The output is condensed, with only
+the most pertinent information being stored, in order to minimize file size.
+
+The function works by recursively calling scb_list() and storing the results.
 }
