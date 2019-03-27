@@ -3,27 +3,28 @@
 \docType{data}
 \name{scb_cache}
 \alias{scb_cache}
-\title{Cached view of ssd directories}
-\format{A data frame with x rows and 10 columns:
-\describe{
-  \item{id}{ID to use to query directory or table}
-  \item{depth}{1 = highest level directory, incremented for each subdirectory}
-  \item{type}{l for directory, t for table}
-  \item{name}{Name of directory / table}
-  \item{var_desc}{Variables in table}
-  \item{val_desc}{Values in table}
-  \item{date_start}{First time entry in table}
-  \item{date_end}{Last time entry in table}
-}}
+\title{Cached ssd Database}
+\format{A data frame with approximately 2800 rows and 10 columns: \describe{
+  \item{id}{ID to use to query directory or table} \item{depth}{1 = highest
+  level directory, incremented for each subdirectory} \item{type}{l for
+  directory, t for table} \item{name}{Name of directory / table}
+  \item{var_desc}{Variables in table} \item{val_desc}{Values in table}
+  \item{date_start}{First time entry in table} \item{date_end}{Last time
+  entry in table} }}
 \source{
-rscb::scb_create_directory_cache()
+rscb::scb_create_cache()
 }
 \usage{
 scb_cache
 }
 \description{
-Data frame containing information on all directories, subdirectories, and
-tables in the ssd database (the main database for national statistics, and
-currently the only one accessible via API).
+Data.frame containing information on all directories, subdirectories, and
+tables in the ssd database, which is the main database for national
+statistics and, currently, the only one available through the API.
+}
+\details{
+The cache is created by scb_create_cache(). For directories, the ID and text
+description is provided, while tables additionally include the variables,
+values, and date range present in the table.
 }
 \keyword{datasets}
