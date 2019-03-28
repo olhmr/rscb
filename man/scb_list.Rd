@@ -35,8 +35,11 @@ directory, a subdirectory, or a table ID. The IDs can most easily be
 determined by either sequentially interrogating the database (starting with
 no ID argument), or by looking through the cached data in scb_cache.
 
-The function uses the httr package to submit the API request, and jsonlite to
-parse the response, which it then returns. If the ID path refers to a
+The function uses the
+\href{https://cran.r-project.org/web/packages/httr/index.html}{httr} package
+to submit the API request, and
+\href{https://cran.r-project.org/web/packages/jsonlite/index.html}{jsonlite}
+to parse the response, which it then returns. If the ID path refers to a
 specific table, the returned data will contain all metadata available for
 that table, rather than a directory list.
 }

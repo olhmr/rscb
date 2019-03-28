@@ -15,8 +15,11 @@
 #' determined by either sequentially interrogating the database (starting with
 #' no ID argument), or by looking through the cached data in scb_cache.
 #'
-#' The function uses the httr package to submit the API request, and jsonlite to
-#' parse the response, which it then returns. If the ID path refers to a
+#' The function uses the
+#' \href{https://cran.r-project.org/web/packages/httr/index.html}{httr} package
+#' to submit the API request, and
+#' \href{https://cran.r-project.org/web/packages/jsonlite/index.html}{jsonlite}
+#' to parse the response, which it then returns. If the ID path refers to a
 #' specific table, the returned data will contain all metadata available for
 #' that table, rather than a directory list.
 #'
@@ -60,16 +63,16 @@ scb_list <- function(lang = "en", database_id = "ssd", id = NULL) {
 }
 #' Search for directory or table in database cache
 #'
-#' Uses data.frame subsetting along with grepl to return all rows in scb_cache
-#' that matches the provided arguments. Arguments that are skipped are ignored.
-#' The function uses data/scb_cache.rda by default, but this can be overriden
-#' via the cached_database argument.
+#' Uses data.frame subsetting along with grepl to return all rows in
+#' \code{\link{scb_cache}} that matches the provided arguments. Arguments that
+#' are skipped are ignored. The function uses data/scb_cache.rda by default, but
+#' this can be overriden via the cached_database argument.
 #'
 #' The subsetting starts with the type argument, to quickly separate databases
 #' and tables; this is done as a simple data.frame subsetting operation,
 #' matching either "l" or "t". The function then goes through the rest of the
-#' arguments, and uses grepl to match the string or regex provided in the
-#' relevant column.
+#' arguments, and uses \code{\link[base]{grepl}} to match the string or regex
+#' provided in the relevant column.
 #'
 #' If type is not specified but any search term other than ID is, the function
 #' will default to table search as the other search variables are only present
@@ -83,7 +86,7 @@ scb_list <- function(lang = "en", database_id = "ssd", id = NULL) {
 #' @param search_var_desc Rexeg for variable descriptions: table only
 #' @param search_val_desc Regex for value descriptions: table only
 #' @param search_year Year for which there is data: table only
-#' @param cached_database See ?data
+#' @param cached_database See \code{\link{scb_cache}}
 #' @param ignore_case Is regex case sensitive - passed to grepl
 #' @export
 scb_search <- function(search_id = NULL, search_type = NULL, search_name = NULL,
