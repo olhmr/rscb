@@ -2,18 +2,18 @@
 % Please edit documentation in R/scb_create_cache.R
 \name{add_directory_to_cache}
 \alias{add_directory_to_cache}
-\title{Add scb_list() call to cache}
+\title{Add \code{\link{scb_list}} call to cache}
 \usage{
 add_directory_to_cache(cache, lang, database_id, id, depth, call_tracker)
 }
 \arguments{
 \item{cache}{Current cache}
 
-\item{lang}{Language: from scb_create_cache()}
+\item{lang}{Language: from \code{\link{scb_create_cache}}}
 
-\item{database_id}{Database to search: from scb_create_cache()}
+\item{database_id}{Database to search: from \code{\link{scb_create_cache}}}
 
-\item{id}{Path for querying with scb_list()}
+\item{id}{Path for querying with \code{\link{scb_list}}}
 
 \item{depth}{Current depth: 1 = top level directory}
 
@@ -25,7 +25,10 @@ data.frame showing ID, depth, type, and name of each directory,
   variables contained
 }
 \description{
-This function makes up the main body of the scb_create_cache() function. It
-works by recursively calling scb_list(), each time adding the directory list
-and any table metadata as appropriate.
+This function makes up the main body of \code{\link{scb_create_cache}}. It works by
+recursively calling \code{\link{scb_list}}, each time adding the directory list and any
+table metadata as appropriate.
+}
+\details{
+For more information, see \code{\link{scb_create_cache}}.
 }

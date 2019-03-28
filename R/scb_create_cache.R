@@ -1,23 +1,26 @@
-# Functions to cache SCB database
-
 #' Create cache of database
 #'
-#' Creates a local and condensed copy of the given database for the given
-#' language, with the option of starting at a particular ID path to only cache a
-#' subset of the data.
+#' Creates a local and condensed copy of the given database at \url{www.scb.se},
+#' for the given language, with the option of starting at a particular ID path
+#' to only cache a subset of the data.
 #'
-#' The function is currently only tested with the ssd database, as that was the
-#' only one in existence at the time of writing. However, any database that
-#' follows the same structure should work. The output is condensed, with only
-#' the most pertinent information being stored, in order to minimize file size.
+#' The function is only tested with the "ssd" database, as that is the only one
+#' that can be queried through this package and the API as of March 2019. The
+#' output is condensed to reduce file size - the full structure can be seen in
+#' \code{\link{scb_cache}} or by loading "data/scb_cache.rda".
 #'
-#' The function works by recursively calling scb_list() and storing the results.
+#' The function recursively calls \code{\link{scb_list}} through
+#' \code{\link[rscb]{add_directory_to_cache}}. For each directory, the ID path
+#' and text description is stored. For tables, in addition to the ID path and
+#' text description, the variables, values, and date range present in the table
+#' is also stored.
 #'
 #' @param lang Supported languages: "en" English
 #' @param database_id Supported databases: "ssd"
 #' @param initial_id From where to start caching: default top level
-#' @return Cached database containing directory structure and pertinent extracts
-#'   from table metadata
+#' @return Data.frame containing id, depth, type, name, variable and value
+#'   descriptions, and date range for each directory, subdirectory, and table in
+#'   the database
 #' @export
 scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") {
 
@@ -74,16 +77,18 @@ scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") 
   return(cache)
 
 }
-#' Add scb_list() call to cache
+#' Add \code{\link{scb_list}} call to cache
 #'
-#' This function makes up the main body of the scb_create_cache() function. It
-#' works by recursively calling scb_list(), each time adding the directory list
-#' and any table metadata as appropriate.
+#' This function makes up the main body of \code{\link{scb_create_cache}}. It works by
+#' recursively calling \code{\link{scb_list}}, each time adding the directory list and any
+#' table metadata as appropriate.
+#'
+#' For more information, see \code{\link{scb_create_cache}}.
 #'
 #' @param cache Current cache
-#' @param lang Language: from scb_create_cache()
-#' @param database_id Database to search: from scb_create_cache()
-#' @param id Path for querying with scb_list()
+#' @param lang Language: from \code{\link{scb_create_cache}}
+#' @param database_id Database to search: from \code{\link{scb_create_cache}}
+#' @param id Path for querying with \code{\link{scb_list}}
 #' @param depth Current depth: 1 = top level directory
 #' @param call_tracker Current call_tracker instance
 #' @return data.frame showing ID, depth, type, and name of each directory,

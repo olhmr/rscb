@@ -14,19 +14,24 @@ scb_create_cache(lang = "en", database_id = "ssd", initial_id = "")
 \item{initial_id}{From where to start caching: default top level}
 }
 \value{
-Cached database containing directory structure and pertinent extracts
-  from table metadata
+Data.frame containing id, depth, type, name, variable and value
+  descriptions, and date range for each directory, subdirectory, and table in
+  the database
 }
 \description{
-Creates a local and condensed copy of the given database for the given
-language, with the option of starting at a particular ID path to only cache a
-subset of the data.
+Creates a local and condensed copy of the given database at \url{www.scb.se},
+for the given language, with the option of starting at a particular ID path
+to only cache a subset of the data.
 }
 \details{
-The function is currently only tested with the ssd database, as that was the
-only one in existence at the time of writing. However, any database that
-follows the same structure should work. The output is condensed, with only
-the most pertinent information being stored, in order to minimize file size.
+The function is only tested with the "ssd" database, as that is the only one
+that can be queried through this package and the API as of March 2019. The
+output is condensed to reduce file size - the full structure can be seen in
+\code{\link{scb_cache}} or by loading "data/scb_cache.rda".
 
-The function works by recursively calling scb_list() and storing the results.
+The function recursively calls \code{\link{scb_list}} through
+\code{\link[rscb]{add_directory_to_cache}}. For each directory, the ID path
+and text description is stored. For tables, in addition to the ID path and
+text description, the variables, values, and date range present in the table
+is also stored.
 }
