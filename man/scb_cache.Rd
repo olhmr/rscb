@@ -3,28 +3,43 @@
 \docType{data}
 \name{scb_cache}
 \alias{scb_cache}
-\title{Cached ssd Database}
+\title{Cached ssd database}
 \format{A data frame with approximately 2800 rows and 10 columns: \describe{
-  \item{id}{ID to use to query directory or table} \item{depth}{1 = highest
-  level directory, incremented for each subdirectory} \item{type}{l for
-  directory, t for table} \item{name}{Name of directory / table}
-  \item{var_desc}{Variables in table} \item{val_desc}{Values in table}
-  \item{date_start}{First time entry in table} \item{date_end}{Last time
-  entry in table} }}
+  \item{id}{ID path to use to query directory or table} \item{depth}{1 =
+  highest level directory in cache, incremented for each subdirectory}
+  \item{type}{l for directory, t for table} \item{name}{Name of directory /
+  table} \item{var_desc}{Variables present in table} \item{val_desc}{Values
+  present in table} \item{date_start}{Oldest entry in table}
+  \item{date_end}{Most recent entry in table} }}
 \source{
-rscb::scb_create_cache()
+www.scb.se via API through rscb::scb_create_cache()
 }
 \usage{
 scb_cache
 }
 \description{
-Data.frame containing information on all directories, subdirectories, and
-tables in the ssd database, which is the main database for national
-statistics and, currently, the only one available through the API.
+A data.frame containing condensed information on all directories,
+subdirectories, and tables in the "ssd" database at SCB (www.scb.se). ssd is
+the main database for national statistics, and, currently, the only one
+accessible through the API.
 }
 \details{
-The cache is created by scb_create_cache(). For directories, the ID and text
-description is provided, while tables additionally include the variables,
-values, and date range present in the table.
+When compiled on 2019-03-28, the highest level directory had information on:
+\itemize{\item Labour market \item Population \item Housing, construction,
+and building \item Energy \item Financial markets \item Trade in goods and
+services \item Household finances \item Agriculture, forestry, and fishery
+\item Living conditions \item Democracy \item Environment \item National
+accounts \item Business activities \item Public finances \item Prices and
+consumption \item Transport and communications \item Education and research}
+
+The cache is created by running scb_create_cache(), which recursively calls
+scb_list(). For each directory, the ID path and text description is stored.
+For tables, in addition to the ID path and text description, the variables,
+values, and date range present in the table is also stored.
+
+In a future iteration of this table, the intention is to flatten the
+structure to store tables on the same rows as their directories. It will also
+include a new column containing information on when the table as last
+updated.
 }
 \keyword{datasets}
