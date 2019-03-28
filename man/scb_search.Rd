@@ -2,31 +2,45 @@
 % Please edit documentation in R/scb_search.R
 \name{scb_search}
 \alias{scb_search}
-\title{Search for directory or table in database}
+\title{Search for directory or table in database cache}
 \usage{
 scb_search(search_id = NULL, search_type = NULL, search_name = NULL,
   search_var_desc = NULL, search_val_desc = NULL, search_year = NULL,
   cached_database = NULL, ignore_case = FALSE)
 }
 \arguments{
-\item{search_id}{Directory / table ID path}
+\item{search_id}{Directory or table ID path}
 
-\item{search_type}{Directory "l" or table "t"}
+\item{search_type}{"l" for directory, "t" for table}
 
-\item{search_name}{Text in directory or table name}
+\item{search_name}{Regex for directory or table name}
 
-\item{search_var_desc}{Text in variable descriptions: table only}
+\item{search_var_desc}{Rexeg for variable descriptions: table only}
 
-\item{search_val_desc}{Text in value descriptions: table only}
+\item{search_val_desc}{Regex for value descriptions: table only}
 
 \item{search_year}{Year for which there is data: table only}
 
-\item{cached_database}{Created by scb_create_cache}
+\item{cached_database}{See ?data}
 
-\item{ignore_case}{Instruction passed to grepl}
+\item{ignore_case}{Is regex case sensitive - passed to grepl}
 }
 \description{
-Currently only cached search implemented, and thus requires cached_directory,
-created by scb_create_cache(), as an argument. This will be amended in the
-future to provide search through uncached directory
+Uses data.frame subsetting along with grepl to return all rows in scb_cache
+that matches the provided arguments. Arguments that are skipped are ignored.
+The function uses data/scb_cache.rda by default, but this can be overriden
+via the cached_database argument.
+}
+\details{
+The subsetting starts with the type argument, to quickly separate databases
+and tables; this is done as a simple data.frame subsetting operation,
+matching either "l" or "t". The function then goes through the rest of the
+arguments, and uses grepl to match the string or regex provided in the
+relevant column.
+
+If type is not specified but any search term other than ID is, the function
+will default to table search as the other search variables are only present
+in tables. In this case, a warning is provided.
+
+This function is subject to change as the caching function is improved.
 }

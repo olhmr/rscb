@@ -1,27 +1,31 @@
-#' List available tables / metadata for level
+#' List directory structure or table metadata
 #'
 #' By default, will return a list of all highest-level directories, in English,
-#' in the ssb database. If additional ids are provided, all subdirectories to
-#' the specified path will be shown.
+#' in the ssd database. If an ID path is provided, either all subdirectories to
+#' the specified path will be shown, or, if the ID path refers to a table, the
+#' table metadata.
 #'
-#' The database_id parameter should normally not be touched; at the moment of
-#' this writing, only the ssd database can be queried. The ids parameter
-#' should be provided as a path, e.g. "AM/AM0101/AM0101A", where each element of
-#' the path refers to an ID. The IDs can most easily be determined by
-#' sequentially searching through the different id, starting with the one
-#' provided by the default call, where id = NULL.
+#' The database_id argument should normally not be touched; "ssd" is the main
+#' database for national statistics and, as of March 2019, the only one
+#' accessible via the API and this package. To see if any other databases are
+#' available, one can set the database_id argument to "": i.e., call
+#' scb_list(database_id = ""). The ID is provided as a path, e.g.
+#' "AM/AM0101/AM0101A", where each element of the path refers to either a
+#' directory, a subdirectory, or a table ID. The IDs can most easily be
+#' determined by either sequentially interrogating the database (starting with
+#' no ID argument), or by looking through the cached data in scb_cache.
 #'
 #' The function uses the httr package to submit the API request, and jsonlite to
-#' parse the response, which is then returned. If an individual table is
-#' specified, the returned data will contain metadata for that table, rather
-#' than a directory list.
+#' parse the response, which it then returns. If the ID path refers to a
+#' specific table, the returned data will contain all metadata available for
+#' that table, rather than a directory list.
 #'
-#' @param lang "en" English or "sv" Swedish
+#' @param lang "en" for English, "sv" for Swedish
 #' @param database_id Database to search
-#' @param id Path to search in database; requires database_id to be defined
-#' @return A data frame containing the requested directory, a list containing
+#' @param id Path to search in database
+#' @return A data.frame containing the requested directory, a list containing
 #'   metadata for the specified table, or, if status code from GET is not 200,
-#'   the status code from the GET call
+#'   the status code from the GET call.
 #' @examples
 #' scb_list()
 #' scb_list(id = "AM/AM0101/AM0101A")
@@ -54,20 +58,33 @@ scb_list <- function(lang = "en", database_id = "ssd", id = NULL) {
   }
 
 }
-#' Search for directory or table in database
+#' Search for directory or table in database cache
 #'
-#' Currently only cached search implemented, and thus requires cached_directory,
-#' created by scb_create_cache(), as an argument. This will be amended in the
-#' future to provide search through uncached directory
+#' Uses data.frame subsetting along with grepl to return all rows in scb_cache
+#' that matches the provided arguments. Arguments that are skipped are ignored.
+#' The function uses data/scb_cache.rda by default, but this can be overriden
+#' via the cached_database argument.
 #'
-#' @param search_id Directory / table ID path
-#' @param search_type Directory "l" or table "t"
-#' @param search_name Text in directory or table name
-#' @param search_var_desc Text in variable descriptions: table only
-#' @param search_val_desc Text in value descriptions: table only
+#' The subsetting starts with the type argument, to quickly separate databases
+#' and tables; this is done as a simple data.frame subsetting operation,
+#' matching either "l" or "t". The function then goes through the rest of the
+#' arguments, and uses grepl to match the string or regex provided in the
+#' relevant column.
+#'
+#' If type is not specified but any search term other than ID is, the function
+#' will default to table search as the other search variables are only present
+#' in tables. In this case, a warning is provided.
+#'
+#' This function is subject to change as the caching function is improved.
+#'
+#' @param search_id Directory or table ID path
+#' @param search_type "l" for directory, "t" for table
+#' @param search_name Regex for directory or table name
+#' @param search_var_desc Rexeg for variable descriptions: table only
+#' @param search_val_desc Regex for value descriptions: table only
 #' @param search_year Year for which there is data: table only
-#' @param cached_database Created by scb_create_cache
-#' @param ignore_case Instruction passed to grepl
+#' @param cached_database See ?data
+#' @param ignore_case Is regex case sensitive - passed to grepl
 #' @export
 scb_search <- function(search_id = NULL, search_type = NULL, search_name = NULL,
                        search_var_desc = NULL, search_val_desc = NULL,
@@ -93,7 +110,6 @@ scb_search <- function(search_id = NULL, search_type = NULL, search_name = NULL,
     search_type <- "t"
 
   }
-
 
   # Check for cached directory
   if (is.null(cached_database)) {
