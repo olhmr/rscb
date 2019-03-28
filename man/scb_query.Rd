@@ -37,3 +37,12 @@ top x records, where x is provided in values \item agg - aggregate values
 
 For more information, see \url{https://www.scb.se/api/}.
 }
+\examples{
+\dontrun{
+scb_query(
+  table_id = "AM/AM0101/AM0101A/LonArb07Privat",
+  list(code = "Overtidstillagg", filter = "item", values = "10"),
+  list(code = "Tid", filter = "top", values = "5"),
+  list(code = "SNI2007", filter = "item", values = c("B", "C")))
+}
+}

@@ -35,3 +35,9 @@ and text description is stored. For tables, in addition to the ID path and
 text description, the variables, values, and date range present in the table
 is also stored.
 }
+\examples{
+\dontrun{
+scb_cache <- scb_create_cache(lang = "en")
+scb_AM0101_cache <- scb_create_cache(lang = "en", initial_id = "AM/AM0101")
+}
+}

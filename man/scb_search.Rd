@@ -44,3 +44,10 @@ in tables. In this case, a warning is provided.
 
 This function is subject to change as the caching function is improved.
 }
+\examples{
+\dontrun{
+scb_search(search_id = "AM/AM0101")
+scb_search(search_type = "t", search_name = "LFS", ignore_case = TRUE)
+scb_search(search_type = "t", search_var_desc = "overtime")
+}
+}

@@ -21,6 +21,11 @@
 #' @return Data.frame containing id, depth, type, name, variable and value
 #'   descriptions, and date range for each directory, subdirectory, and table in
 #'   the database
+#' @examples
+#' \dontrun{
+#' scb_cache <- scb_create_cache(lang = "en")
+#' scb_AM0101_cache <- scb_create_cache(lang = "en", initial_id = "AM/AM0101")
+#' }
 #' @export
 scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") {
 

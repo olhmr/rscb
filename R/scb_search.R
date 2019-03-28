@@ -30,9 +30,11 @@
 #'   metadata for the specified table, or, if status code from GET is not 200,
 #'   the status code from the GET call.
 #' @examples
+#' \dontrun{
 #' scb_list()
 #' scb_list(id = "AM/AM0101/AM0101A")
 #' scb_list(lang = "sv", id = "LE")
+#' }
 #' @export
 scb_list <- function(lang = "en", database_id = "ssd", id = NULL) {
 
@@ -88,6 +90,12 @@ scb_list <- function(lang = "en", database_id = "ssd", id = NULL) {
 #' @param search_year Year for which there is data: table only
 #' @param cached_database See \code{\link{scb_cache}}
 #' @param ignore_case Is regex case sensitive - passed to grepl
+#' @examples
+#' \dontrun{
+#' scb_search(search_id = "AM/AM0101")
+#' scb_search(search_type = "t", search_name = "LFS", ignore_case = TRUE)
+#' scb_search(search_type = "t", search_var_desc = "overtime")
+#' }
 #' @export
 scb_search <- function(search_id = NULL, search_type = NULL, search_name = NULL,
                        search_var_desc = NULL, search_val_desc = NULL,

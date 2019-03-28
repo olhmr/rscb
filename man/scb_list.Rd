@@ -44,7 +44,9 @@ specific table, the returned data will contain all metadata available for
 that table, rather than a directory list.
 }
 \examples{
+\dontrun{
 scb_list()
 scb_list(id = "AM/AM0101/AM0101A")
 scb_list(lang = "sv", id = "LE")
+}
 }

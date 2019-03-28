@@ -22,6 +22,14 @@
 #' @param ... Arguments to query table with, each like: list(code =
 #'   code_to_query, filter = filter_type, values = c(values_to_filter))
 #' @return data.frame containing response from \code{\link[httr]{POST}} query
+#' @examples
+#' \dontrun{
+#' scb_query(
+#'   table_id = "AM/AM0101/AM0101A/LonArb07Privat",
+#'   list(code = "Overtidstillagg", filter = "item", values = "10"),
+#'   list(code = "Tid", filter = "top", values = "5"),
+#'   list(code = "SNI2007", filter = "item", values = c("B", "C")))
+#' }
 #' @export
 scb_query <- function(table_id, ..., lang = "en", database_id = "ssd") {
 
