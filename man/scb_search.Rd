@@ -21,15 +21,15 @@ scb_search(search_id = NULL, search_type = NULL, search_name = NULL,
 
 \item{search_year}{Year for which there is data: table only}
 
-\item{cached_database}{See ?data}
+\item{cached_database}{See \code{\link{scb_cache}}}
 
 \item{ignore_case}{Is regex case sensitive - passed to grepl}
 }
 \description{
-Uses data.frame subsetting along with grepl to return all rows in scb_cache
-that matches the provided arguments. Arguments that are skipped are ignored.
-The function uses data/scb_cache.rda by default, but this can be overriden
-via the cached_database argument.
+Uses data.frame subsetting along with grepl to return all rows in
+\code{\link{scb_cache}} that matches the provided arguments. Arguments that
+are skipped are ignored. The function uses data/scb_cache.rda by default, but
+this can be overriden via the cached_database argument.
 }
 \details{
 The subsetting starts with the type argument, to quickly separate databases

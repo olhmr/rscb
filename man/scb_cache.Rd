@@ -12,19 +12,19 @@
   present in table} \item{date_start}{Oldest entry in table}
   \item{date_end}{Most recent entry in table} }}
 \source{
-www.scb.se via API through rscb::scb_create_cache()
+\url{www.scb.se} via API through \code{\link{scb_create_cache}}
 }
 \usage{
 scb_cache
 }
 \description{
 A data.frame containing condensed information on all directories,
-subdirectories, and tables in the "ssd" database at SCB (www.scb.se). ssd is
-the main database for national statistics, and, currently, the only one
+subdirectories, and tables in the "ssd" database at SCB \url{www.scb.se}. ssd
+is the main database for national statistics, and, currently, the only one
 accessible through the API.
 }
 \details{
-When compiled on 2019-03-28, the highest level directory had information on:
+When compiled in March 2019, the highest level directory had information on:
 \itemize{\item Labour market \item Population \item Housing, construction,
 and building \item Energy \item Financial markets \item Trade in goods and
 services \item Household finances \item Agriculture, forestry, and fishery
@@ -32,10 +32,11 @@ services \item Household finances \item Agriculture, forestry, and fishery
 accounts \item Business activities \item Public finances \item Prices and
 consumption \item Transport and communications \item Education and research}
 
-The cache is created by running scb_create_cache(), which recursively calls
-scb_list(). For each directory, the ID path and text description is stored.
-For tables, in addition to the ID path and text description, the variables,
-values, and date range present in the table is also stored.
+The cache is created by running \code{\link{scb_create_cache}}, which
+recursively calls \code{\link{scb_list}}. For each directory, the ID path and
+text description is stored. For tables, in addition to the ID path and text
+description, the variables, values, and date range present in the table is
+also stored.
 
 In a future iteration of this table, the intention is to flatten the
 structure to store tables on the same rows as their directories. It will also

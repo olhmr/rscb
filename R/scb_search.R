@@ -60,10 +60,10 @@ scb_list <- function(lang = "en", database_id = "ssd", id = NULL) {
 }
 #' Search for directory or table in database cache
 #'
-#' Uses data.frame subsetting along with grepl to return all rows in scb_cache
-#' that matches the provided arguments. Arguments that are skipped are ignored.
-#' The function uses data/scb_cache.rda by default, but this can be overriden
-#' via the cached_database argument.
+#' Uses data.frame subsetting along with grepl to return all rows in
+#' \code{\link{scb_cache}} that matches the provided arguments. Arguments that
+#' are skipped are ignored. The function uses data/scb_cache.rda by default, but
+#' this can be overriden via the cached_database argument.
 #'
 #' The subsetting starts with the type argument, to quickly separate databases
 #' and tables; this is done as a simple data.frame subsetting operation,
@@ -83,7 +83,7 @@ scb_list <- function(lang = "en", database_id = "ssd", id = NULL) {
 #' @param search_var_desc Rexeg for variable descriptions: table only
 #' @param search_val_desc Regex for value descriptions: table only
 #' @param search_year Year for which there is data: table only
-#' @param cached_database See ?data
+#' @param cached_database See \code{\link{scb_cache}}
 #' @param ignore_case Is regex case sensitive - passed to grepl
 #' @export
 scb_search <- function(search_id = NULL, search_type = NULL, search_name = NULL,
