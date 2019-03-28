@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{update_call_tracker}
 \alias{update_call_tracker}
-\title{Keep track of API calls}
+\title{Manage API calls in last 10 seconds}
 \usage{
 update_call_tracker(tracker = NULL)
 }
@@ -10,7 +10,7 @@ update_call_tracker(tracker = NULL)
 \item{tracker}{Currently tracked calls}
 }
 \value{
-Data frame containing currently tracked calls
+data.frame containing currently tracked calls
 }
 \description{
 Manages list of all API calls made in the last 10 seconds. If no tracker is
@@ -20,9 +20,9 @@ remove all items with a timestamp > 10 seconds from current system time.
 }
 \details{
 The SCB API limits calls to 10 per 10 seconds (rolling). If this number is
-exceeded, httr::GET returns a 429 response. We could use Sys.sleep(10) when
-this occurs to reset the counter, but this would be inefficient: since the
-limit is rolling, we should only wait until the oldest call is > 10 seconds
-in the past, and then attempt a new query. This is what this function
-facilitates.
+exceeded, \code{\link[httr]{GET}} returns a 429 response. We could use
+\code{\link[base]{Sys.sleep}} with time set to 10 seconds when this occurs,
+to reset the counter, but this would be inefficient: since the limit is
+rolling, we should only wait until the oldest call is > 10 seconds in the
+past, and then attempt a new query. This is what this function facilitates.
 }
