@@ -29,6 +29,20 @@
 #' @export
 scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") {
 
+  # Check arguments
+  if (!grepl(pattern = "^en$|^sv$", x = lang)) {
+    stop("The lang parameter must be either \"en\" (English) or \"sv\" (Swedish)")
+  }
+  if (is.character(database_id) & database_id != "ssd") {
+    warning(paste0("Are you sure ", database_id, " is a valid database? As of March 2019, \"ssd\" is the only known database."))
+  }
+  if (!is.character(database_id)) {
+    stop("The database ID must be given as a character string, e.g. ssd")
+  }
+  if (!is.character(initial_id)) {
+    stop("The initial ID must be given as a character string, e.g. AM/AM0101")
+  }
+
   # Set up container
   cache <- data.frame(id = character(),
                       depth = numeric(),
