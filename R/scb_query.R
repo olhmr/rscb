@@ -33,6 +33,14 @@
 #' @export
 scb_query <- function(table_id, ..., lang = "en", database_id = "ssd") {
 
+  # Check arguments
+  if (!grepl(pattern = "^en$|^sv$", x = lang)) {
+    stop("The lang parameter must be either \"en\" (English) or \"sv\" (Swedish)")
+  }
+  if (database_id != "ssd") {
+    warning(paste0("Are you sure ", database_id, " is a valid database? As of March 2019, \"ssd\" is the only known database."))
+  }
+
   # Create request url
   api_url <- paste0("http://api.scb.se/OV0104/v1/doris/", lang, "/", database_id, "/", table_id)
 
