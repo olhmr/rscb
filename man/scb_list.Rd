@@ -17,9 +17,9 @@ scb_list(lang = "en", database_id = "ssd", id = NULL,
 \item{call_tracker}{Used in internal package functions}
 }
 \value{
-A data.frame containing the requested directory, a list containing
-  metadata for the specified table, or, if status code from GET is not 200,
-  the status code from the GET call.
+A 2-element list, where the first element is the status_code from
+  \code{\link[httr]{GET}}, and the second is a data.frame containing the
+  parsed respon, or an empty data.frame if the status_code is not 200
 }
 \description{
 By default, will return a list of all highest-level directories, in English,

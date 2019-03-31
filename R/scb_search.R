@@ -33,9 +33,9 @@
 #' @param database_id Database to search
 #' @param id Path to search in database
 #' @param call_tracker Used in internal package functions
-#' @return A data.frame containing the requested directory, a list containing
-#'   metadata for the specified table, or, if status code from GET is not 200,
-#'   the status code from the GET call.
+#' @return A 2-element list, where the first element is the status_code from
+#'   \code{\link[httr]{GET}}, and the second is a data.frame containing the
+#'   parsed respon, or an empty data.frame if the status_code is not 200
 #' @examples
 #' \dontrun{
 #' scb_list()
@@ -77,16 +77,19 @@ scb_list <- function(lang = "en", database_id = "ssd", id = NULL, call_tracker =
 
   if (response$status_code == 200) {
 
-    # Status good - parse and return response
-    parsed <- jsonlite::parse_json(json = response, simplifyVector = TRUE)
-    return(parsed)
+    # Status good - return both status code and data
+    output <- list(status_code = response$status_code,
+                   parsed_data = jsonlite::parse_json(json = response, simplifyVector = TRUE))
 
   } else {
 
-    # Status bad - return status_code code
-    return(paste0("Unexpected status code from GET: ", response$status_code))
+    # Status bad - return status code and empty data.frame
+    output <- list(status_code = response$status_code,
+                   parsed_data = data.frame())
 
   }
+
+  return(output)
 
 }
 #' Search for directory or table in database cache
