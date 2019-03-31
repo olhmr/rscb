@@ -21,7 +21,8 @@
 #' \href{https://cran.r-project.org/web/packages/jsonlite/index.html}{jsonlite}
 #' to parse the response, which it then returns. If the ID path refers to a
 #' specific table, the returned data will contain all metadata available for
-#' that table, rather than a directory list.
+#' that table, rather than a directory list; this metadata will be unnested
+#' using \code{\link[tidyr]{unnest}} to make it more readable.
 #'
 #' If the \code{\link[httr]{GET}} call returns with status code 429 (too many
 #' requests), the function will wait until the last call to the API has cleared,
@@ -32,6 +33,8 @@
 #' @param lang "en" for English, "sv" for Swedish
 #' @param database_id Database to search
 #' @param id Path to search in database
+#' @param unnest_variables TRUE will unnest the variable data to be easier to
+#'   read
 #' @param call_tracker Used in internal package functions
 #' @return A 2-element list, where the first element is the status_code from
 #'   \code{\link[httr]{GET}}, and the second is a data.frame containing the
@@ -43,7 +46,8 @@
 #' scb_list(lang = "sv", id = "LE")
 #' }
 #' @export
-scb_list <- function(lang = "en", database_id = "ssd", id = NULL, call_tracker = NULL) {
+scb_list <- function(lang = "en", database_id = "ssd", id = NULL, unnest_variables = TRUE,
+                     call_tracker = NULL) {
 
   # Create request url
   api_url <- paste0("http://api.scb.se/OV0104/v1/doris/", lang, "/", database_id, "/", id)
@@ -86,6 +90,13 @@ scb_list <- function(lang = "en", database_id = "ssd", id = NULL, call_tracker =
     # Status bad - return status code and empty data.frame
     output <- list(status_code = response$status_code,
                    parsed_data = data.frame())
+
+  }
+
+  # Check if specific variable data was requested
+  if (unnest_variables & "variables" %in% names(output$parsed_data)) {
+
+    output$parsed_data$variables <- tidyr::unnest(output$parsed_data$variables)
 
   }
 

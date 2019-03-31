@@ -5,7 +5,7 @@
 \title{List directory structure or table metadata}
 \usage{
 scb_list(lang = "en", database_id = "ssd", id = NULL,
-  call_tracker = NULL)
+  unnest_variables = TRUE, call_tracker = NULL)
 }
 \arguments{
 \item{lang}{"en" for English, "sv" for Swedish}
@@ -13,6 +13,9 @@ scb_list(lang = "en", database_id = "ssd", id = NULL,
 \item{database_id}{Database to search}
 
 \item{id}{Path to search in database}
+
+\item{unnest_variables}{TRUE will unnest the variable data to be easier to
+read}
 
 \item{call_tracker}{Used in internal package functions}
 }
@@ -44,7 +47,8 @@ to submit the API request, and
 \href{https://cran.r-project.org/web/packages/jsonlite/index.html}{jsonlite}
 to parse the response, which it then returns. If the ID path refers to a
 specific table, the returned data will contain all metadata available for
-that table, rather than a directory list.
+that table, rather than a directory list; this metadata will be unnested
+using \code{\link[tidyr]{unnest}} to make it more readable.
 
 If the \code{\link[httr]{GET}} call returns with status code 429 (too many
 requests), the function will wait until the last call to the API has cleared,

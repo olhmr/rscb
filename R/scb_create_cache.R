@@ -43,7 +43,8 @@ scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") 
   # Initialise
   call_tracker <- update_call_tracker()
   cur_dir <- scb_list(lang = lang, database_id = database_id,
-                      id = initial_id, call_tracker = call_tracker)[[2]]
+                      id = initial_id, unnest_variables = FALSE,
+                      call_tracker = call_tracker)[[2]]
   cache <- rbind(cache, data.frame(id = cur_dir$id, depth = 1, type = cur_dir$type,
                                    name = cur_dir$text, var_desc = NA, val_desc = NA,
                                    date_start = NA, date_end = NA,
@@ -65,6 +66,7 @@ scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") 
       # Get variables
       vars <- scb_list(lang = lang, database_id = database_id,
                        id = paste0(initial_id, "/", cur_dir[i, ]$id),
+                       unnest_variables = FALSE,
                        call_tracker = call_tracker)[[2]]$variables
 
       # Store in cache
@@ -103,7 +105,8 @@ add_directory_to_cache <- function(cache, lang, database_id, id, depth, call_tra
 
   # Call scb_list: if 429 response, wait for cache to clear then continue
   cur_dir <- scb_list(lang = lang, database_id = database_id,
-                      id = id, call_tracker = call_tracker)[[2]]
+                      id = id, unnest_variables = FALSE,
+                      call_tracker = call_tracker)[[2]]
 
   # Create dummy cache to bind
   tmp_cache <- data.frame(id = paste0(id, "/", cur_dir$id),
@@ -129,7 +132,8 @@ add_directory_to_cache <- function(cache, lang, database_id, id, depth, call_tra
 
       # Get variables
       vars <- scb_list(lang = lang, database_id = database_id,
-                       id = tmp_cache[i, ]$id, call_tracker = call_tracker)[[2]]$variables
+                       id = tmp_cache[i, ]$id, unnest_variables = FALSE,
+                       call_tracker = call_tracker)[[2]]$variables
 
       # Store in cache
       vars_interpreted <- interpret_table_variables(vars)
