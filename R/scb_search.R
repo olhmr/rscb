@@ -38,11 +38,6 @@
 #' @export
 scb_list <- function(lang = "en", database_id = "ssd", id = NULL) {
 
-  # Validate language input
-  if (!grepl(pattern = "^en$|^sv$", x = lang)) {
-    stop("The lang parameter must be either \"en\" (English) or \"sv\" (Swedish)")
-  }
-
   # Create request url
   api_url <- paste0("http://api.scb.se/OV0104/v1/doris/", lang, "/", database_id, "/", id)
 

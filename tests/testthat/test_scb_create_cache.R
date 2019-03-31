@@ -9,20 +9,6 @@ testthat::test_that("a small subset of the database can be cached and accessed",
 
 })
 
-testthat::test_that("unexpected arguments give intelligible errors", {
-
-  testthat::expect_error(scb_create_cache(lang = "kr"))
-  testthat::expect_error(scb_create_cache(lang = list(a = "a", b = 3)))
-  testthat::expect_error(scb_create_cache(lang = 3))
-  testthat::expect_warning(scb_create_cache(database_id = "ssb"))
-  testthat::expect_error(scb_create_cache(database_id = list(a = "a", b = 3)))
-  testthat::expect_error(scb_create_cache(database_id = 3))
-  testthat::expect_error(scb_create_cache(initial_id = 3))
-  testthat::expect_error(scb_create_cache(initial_id = c(2, 3)))
-  testthat::expect_error(scb_create_cache(initial_id = list("2", 3)))
-
-})
-
 testthat::test_that("the cache has all expected columns", {
 
   scb_cache_test <- scb_create_cache(initial_id = "AM/AM0101")
