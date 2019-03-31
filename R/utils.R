@@ -65,11 +65,14 @@ interpret_table_variables <- function(table_vars) {
     time_index <- which(table_vars$time)
 
     # Store time values
-    time_values <- table_vars$values[time_index]
+    time_values <- table_vars$values[time_index][[1]]
 
-    # Assume ordered list for now
-    time_start <- time_values[[1]][1]
-    time_end <- time_values[[1]][length(time_values[[1]])]
+    # Convert based on known formats
+    time_values <- lapply(X = time_values, FUN = convert_time_to_year)
+
+    # Store min and max
+    time_start <- min(unlist(time_values))
+    time_end <- max(unlist(time_values))
 
   }
 
@@ -109,5 +112,54 @@ interpret_table_variables <- function(table_vars) {
   extract$date_range_end <- time_end
 
   return(extract)
+
+}
+#' Convert string time to numeric year
+#'
+#' \href{SCB:s}{www.scb.se} database stores time data in a few different formats,
+#' many of which has no standard conversion to numeric or time objects. This
+#' function uses the known formats to convert time data to a numeric year, to
+#' enable easy comparisons. Months and quarters are ignored, as they are not
+#' present in all tables.
+#'
+#' The formats currently supported are listed below; each representing 2018,
+#' January 2018, or the range of years 2018-2019: \itemize{\item "2018" \item
+#' "2018M01" \item "2018m01" \item "2018K1" \item "2018k1" \item "2018-2019"
+#' \item "2018/2019}
+#'
+#' @param time_value The time value returned from API query
+#' @return Integer value of year, or NA if unable to convert
+convert_time_to_year <- function(time_value) {
+
+  if (grepl(pattern = "^\\d{4}$", x = time_value)) {
+
+    # Format is of type 2018 for 2018
+    year <- as.numeric(time_value)
+
+  } else if (grepl(pattern = "^\\d{4}M\\d{2}$", x = time_value, ignore.case = TRUE) |
+             grepl(pattern = "^\\d{4}K\\d{1}$", x = time_value, ignore.case = TRUE)) {
+
+    # Format is of type 2018M01 for January 2018 or
+    # Format is of type 2018K1 for first quarter 2018
+    year <- as.numeric(stringr::str_match(string = time_value,
+                                          pattern = "^\\d{4}"))
+
+  } else if (grepl(pattern = "^\\d{4}-\\d{4}$", x = time_value) |
+             grepl(pattern = "^\\d{4}/\\d{4}$", x = time_value)) {
+
+    # Format is a range of years, e.g. 2015-2018 or 2018/2019
+    year_start <- as.numeric(stringr::str_match(string = time_value, pattern = "^\\d{4}"))
+    year_end <- as.numeric(stringr::str_match(string = time_value, pattern = "\\d{4}$"))
+    year <- seq.int(from = year_start, to = year_end, by = 1)
+
+  } else {
+
+    # Unrecognised format - give warning and return NA
+    warning(paste0("Unable to convert time format ", time_value, ", will show as NA."))
+    year <- NA
+
+  }
+
+  return(year)
 
 }

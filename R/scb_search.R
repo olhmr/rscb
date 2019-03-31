@@ -177,7 +177,7 @@ scb_search <- function(search_id = NULL, search_type = NULL, search_name = NULL,
   if (!is.null(search_name)) {output <- output[grepl(pattern = search_name, x = output$name, ignore.case = ignore_case), ]}
   if (!is.null(search_var_desc)) {output <- output[grepl(pattern = search_var_desc, x = output$var_desc, ignore.case = ignore_case), ]}
   if (!is.null(search_val_desc)) {ouput <- output[grepl(pattern = search_val_desc, x = output$val_desc, ignore.case = ignore_case), ]}
-  # Make special handling of years
+  if (!is.null(search_year)) {output <- output[output$date_start >= search_year & output$date_end <= search_year, ]}
 
   # Return
   return(output)
