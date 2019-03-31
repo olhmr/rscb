@@ -23,9 +23,16 @@
 #' specific table, the returned data will contain all metadata available for
 #' that table, rather than a directory list.
 #'
+#' If the \code{\link[httr]{GET}} call returns with status code 429 (too many
+#' requests), the function will wait until the last call to the API has cleared,
+#' then try again. This normally resolves within, at most, 10 seconds, but there
+#' is also a fixed limit of 50,000 attempts until the function exits to prevent
+#' infinite loops.
+#'
 #' @param lang "en" for English, "sv" for Swedish
 #' @param database_id Database to search
 #' @param id Path to search in database
+#' @param call_tracker Used in internal package functions
 #' @return A data.frame containing the requested directory, a list containing
 #'   metadata for the specified table, or, if status code from GET is not 200,
 #'   the status code from the GET call.
@@ -36,15 +43,39 @@
 #' scb_list(lang = "sv", id = "LE")
 #' }
 #' @export
-scb_list <- function(lang = "en", database_id = "ssd", id = NULL) {
+scb_list <- function(lang = "en", database_id = "ssd", id = NULL, call_tracker = NULL) {
 
   # Create request url
   api_url <- paste0("http://api.scb.se/OV0104/v1/doris/", lang, "/", database_id, "/", id)
 
-  # GET response and check status
-  response <- httr::GET(url = api_url)
-  status <- response$status
-  if (status == 200) {
+  # Loop httr::GET call to catch 429 response (too many requests)
+  # If 429, wait for cache to clear then continue
+  # Arbitrary counter to avoid infinite loops
+  counter <- 0
+  if (is.null(call_tracker)) {call_tracker <- update_call_tracker()}
+  while (TRUE) {
+
+    call_tracker <- update_call_tracker(call_tracker)
+    response <- httr::GET(url = api_url)
+
+    if (response$status_code == 429) {
+
+      counter <- counter + 1
+      time_to_sleep <- difftime(Sys.time(), call_tracker[which.min(call_tracker$timestamp), ])
+      Sys.sleep(time_to_sleep)
+
+    } else {
+
+      counter <- 0
+      break
+
+    }
+
+    if (counter > 49999) {stop("Loop failed to exit in scb_list call")}
+
+  }
+
+  if (response$status_code == 200) {
 
     # Status good - parse and return response
     parsed <- jsonlite::parse_json(json = response, simplifyVector = TRUE)
@@ -52,8 +83,8 @@ scb_list <- function(lang = "en", database_id = "ssd", id = NULL) {
 
   } else {
 
-    # Status bad - return status code
-    return(paste0("Unexpected status code from GET: ", status))
+    # Status bad - return status_code code
+    return(paste0("Unexpected status code from GET: ", response$status_code))
 
   }
 

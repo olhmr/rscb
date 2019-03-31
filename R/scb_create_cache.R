@@ -42,8 +42,8 @@ scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") 
 
   # Initialise
   call_tracker <- update_call_tracker()
-  cur_dir <- try_scb_list(lang = lang, database_id = database_id,
-                          id = initial_id, call_tracker = call_tracker)
+  cur_dir <- scb_list(lang = lang, database_id = database_id,
+                      id = initial_id, call_tracker = call_tracker)
   cache <- rbind(cache, data.frame(id = cur_dir$id, depth = 1, type = cur_dir$type,
                                    name = cur_dir$text, var_desc = NA, val_desc = NA,
                                    date_start = NA, date_end = NA,
@@ -63,7 +63,7 @@ scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") 
     } else if (cur_dir[i, ]$type == "t") {
 
       # Get variables
-      vars <- try_scb_list(lang = lang, database_id = database_id,
+      vars <- scb_list(lang = lang, database_id = database_id,
                        id = paste0(initial_id, "/", cur_dir[i, ]$id),
                        call_tracker = call_tracker)$variables
 
@@ -102,8 +102,8 @@ scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") 
 add_directory_to_cache <- function(cache, lang, database_id, id, depth, call_tracker) {
 
   # Call scb_list: if 429 response, wait for cache to clear then continue
-  cur_dir <- try_scb_list(lang = lang, database_id = database_id,
-                          id = id, call_tracker = call_tracker)
+  cur_dir <- scb_list(lang = lang, database_id = database_id,
+                      id = id, call_tracker = call_tracker)
 
   # Create dummy cache to bind
   tmp_cache <- data.frame(id = paste0(id, "/", cur_dir$id),
@@ -128,8 +128,8 @@ add_directory_to_cache <- function(cache, lang, database_id, id, depth, call_tra
     } else if (tmp_cache[i, ]$type == "t") {
 
       # Get variables
-      vars <- try_scb_list(lang = lang, database_id = database_id,
-                           id = tmp_cache[i, ]$id, call_tracker = call_tracker)$variables
+      vars <- scb_list(lang = lang, database_id = database_id,
+                       id = tmp_cache[i, ]$id, call_tracker = call_tracker)$variables
 
       # Store in cache
       vars_interpreted <- interpret_table_variables(vars)

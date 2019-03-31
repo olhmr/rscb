@@ -4,7 +4,8 @@
 \alias{scb_list}
 \title{List directory structure or table metadata}
 \usage{
-scb_list(lang = "en", database_id = "ssd", id = NULL)
+scb_list(lang = "en", database_id = "ssd", id = NULL,
+  call_tracker = NULL)
 }
 \arguments{
 \item{lang}{"en" for English, "sv" for Swedish}
@@ -12,6 +13,8 @@ scb_list(lang = "en", database_id = "ssd", id = NULL)
 \item{database_id}{Database to search}
 
 \item{id}{Path to search in database}
+
+\item{call_tracker}{Used in internal package functions}
 }
 \value{
 A data.frame containing the requested directory, a list containing
@@ -42,6 +45,12 @@ to submit the API request, and
 to parse the response, which it then returns. If the ID path refers to a
 specific table, the returned data will contain all metadata available for
 that table, rather than a directory list.
+
+If the \code{\link[httr]{GET}} call returns with status code 429 (too many
+requests), the function will wait until the last call to the API has cleared,
+then try again. This normally resolves within, at most, 10 seconds, but there
+is also a fixed limit of 50,000 attempts until the function exits to prevent
+infinite loops.
 }
 \examples{
 \dontrun{
