@@ -13,15 +13,17 @@ convert_time_to_year(time_value)
 Integer value of year, or NA if unable to convert
 }
 \description{
-\href{SCB:s}{www.scb.se} database stores time data in a few different formats,
-many of which has no standard conversion to numeric or time objects. This
-function uses the known formats to convert time data to a numeric year, to
-enable easy comparisons. Months and quarters are ignored, as they are not
+\href{SCB:s}{www.scb.se} database stores time data in a few different
+formats, many of which has no standard conversion to numeric or time objects.
+This function uses the known formats to convert time data to a numeric year,
+to enable easy comparisons. Months and quarters are ignored, as they are not
 present in all tables.
 }
 \details{
-The formats currently supported are listed below; each representing 2018,
-January 2018, or the range of years 2018-2019: \itemize{\item "2018" \item
-"2018M01" \item "2018m01" \item "2018K1" \item "2018k1" \item "2018-2019"
-\item "2018/2019}
+The formats currently supported are listed below: \itemize{\item "2018" for
+year 2018 \item "2018M01" for year 2018, January \item "2018m01" for year
+2018, January \item "2018K1" for year 2018, first quarter \item "2018k1" for
+year 2018, first quarter \item "2018-2020" for years 2018, 2019, and 2020
+\item "2018/2019" for years 2018 and 2019 \item "2018H1" for year 2018, first
+half \item "2018h1" for year 2018, first half}
 }
