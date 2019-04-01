@@ -161,9 +161,6 @@ convert_time_to_year <- function(time_value) {
     
     # Format is of type 2018/19
     year_start <- as.numeric(stringr::str_match(string = time_value, pattern = "^\\d{4}"))
-    
-    # Second year is first two digits of first year + last two digits in
-    # time_value string
     year_end <- as.numeric(paste0(stringr::str_match(string = year_start, pattern = "^\\d{2}"), 
                                   stringr::str_match(string = time_value, pattern = "\\d{2}$")))
     year <- seq.int(from = year_start, to = year_end, by = 1)
