@@ -25,5 +25,6 @@ year 2018 \item "2018M01" for year 2018, January \item "2018m01" for year
 2018, January \item "2018K1" for year 2018, first quarter \item "2018k1" for
 year 2018, first quarter \item "2018-2020" for years 2018, 2019, and 2020
 \item "2018/2019" for years 2018 and 2019 \item "2018H1" for year 2018, first
-half \item "2018h1" for year 2018, first half}
+half \item "2018h1" for year 2018, first half \item "2018/19" for years 2018
+and 2019}
 }

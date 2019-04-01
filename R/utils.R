@@ -127,7 +127,8 @@ interpret_table_variables <- function(table_vars) {
 #' 2018, January \item "2018K1" for year 2018, first quarter \item "2018k1" for
 #' year 2018, first quarter \item "2018-2020" for years 2018, 2019, and 2020
 #' \item "2018/2019" for years 2018 and 2019 \item "2018H1" for year 2018, first
-#' half \item "2018h1" for year 2018, first half}
+#' half \item "2018h1" for year 2018, first half \item "2018/19" for years 2018
+#' and 2019}
 #'
 #' @param time_value The time value returned from API query
 #' @return Integer value of year, or NA if unable to convert
@@ -156,6 +157,14 @@ convert_time_to_year <- function(time_value) {
     year_end <- as.numeric(stringr::str_match(string = time_value, pattern = "\\d{4}$"))
     year <- seq.int(from = year_start, to = year_end, by = 1)
 
+  } else if (grepl(pattern = "^\\d{4}/\\d{2}$", x = time_value)) {
+    
+    # Format is of type 2018/19
+    year_start <- as.numeric(stringr::str_match(string = time_value, pattern = "^\\d{4}"))
+    year_end <- as.numeric(paste0(stringr::str_match(string = year_start, pattern = "^\\d{2}"), 
+                                  stringr::str_match(string = time_value, pattern = "\\d{2}$")))
+    year <- seq.int(from = year_start, to = year_end, by = 1)
+    
   } else {
 
     # Unrecognised format - give warning and return NA
