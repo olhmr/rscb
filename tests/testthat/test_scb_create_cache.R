@@ -41,7 +41,12 @@ testthat::test_that("tables, and only tables, have metadata", {
 
 testthat::test_that("the same cache is created from the same input", {
 
-  testthat::expect_equal_to_reference(scb_create_cache(initial_id = "AM/AM0101"),
+  new_cache <- scb_create_cache(initial_id = "AM/AM0101")
+  new_cache <- new_cache[, !names(new_cache) == "updated"]
+  # Comparing updated fails with POSIXct not provided an origin, and also better
+  # to not include as difference doesn't invalidate test
+
+  testthat::expect_equal_to_reference(new_cache,
                                       file = load("scb_cache_test.rda"))
 
 })
