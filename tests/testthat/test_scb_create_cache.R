@@ -12,7 +12,10 @@ testthat::test_that("the cache has all expected columns", {
 
   scb_cache_test <- scb_create_cache(initial_id = "AM/AM0101")
   testthat::expect_true("id" %in% names(scb_cache_test))
+  testthat::expect_true("type" %in% names(scb_cache_test))
+  testthat::expect_true("depth" %in% names(scb_cache_test))
   testthat::expect_true("name" %in% names(scb_cache_test))
+  testthat::expect_true("updated" %in% names(scb_cache_test))
   testthat::expect_true("var_desc" %in% names(scb_cache_test))
   testthat::expect_true("val_desc" %in% names(scb_cache_test))
   testthat::expect_true("date_start" %in% names(scb_cache_test))

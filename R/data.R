@@ -28,8 +28,9 @@
 #'   \item{id}{ID path to use to query directory or table} \item{depth}{1 =
 #'   highest level directory in cache, incremented for each subdirectory}
 #'   \item{type}{l for directory, t for table} \item{name}{Name of directory /
-#'   table} \item{var_desc}{Variables present in table} \item{val_desc}{Values
-#'   present in table} \item{date_start}{Oldest entry in table}
-#'   \item{date_end}{Most recent entry in table} }
+#'   table} \item{updated}{Last time table was updated}
+#'   \item{var_desc}{Variables present in table} \item{val_desc}{Values present
+#'   in table} \item{date_start}{Oldest entry in table} \item{date_end}{Most
+#'   recent entry in table} }
 #' @source \url{www.scb.se} via API through \code{\link{scb_create_cache}}
 "scb_cache"

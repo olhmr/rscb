@@ -34,6 +34,7 @@ scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") 
                       depth = numeric(),
                       type = character(),
                       name = character(),
+                      updated = as.POSIXct(character()),
                       var_desc = character(),
                       val_desc = character(),
                       date_start = character(),
@@ -46,7 +47,8 @@ scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") 
                       id = initial_id, unnest_variables = FALSE,
                       call_tracker = call_tracker)[[2]]
   cache <- rbind(cache, data.frame(id = cur_dir$id, depth = 1, type = cur_dir$type,
-                                   name = cur_dir$text, var_desc = NA, val_desc = NA,
+                                   name = cur_dir$text, updated = as.POSIXct(NA), 
+                                   var_desc = NA, val_desc = NA,
                                    date_start = NA, date_end = NA,
                                    stringsAsFactors = FALSE))
 
@@ -62,12 +64,17 @@ scb_create_cache <- function(lang = "en", database_id = "ssd", initial_id = "") 
                                       depth = 1, call_tracker = call_tracker)
 
     } else if (cur_dir[i, ]$type == "t") {
+      
+      # Store updated
+      updated_time <- as.POSIXct(x = cur_dir[i, ]$updated, format = "%Y-%m-%dT%H:%M:%S")
+      cache[cache$id == cur_dir[i, ]$id, ]$updated <- updated_time
 
       # Get variables
-      vars <- scb_list(lang = lang, database_id = database_id,
-                       id = paste0(initial_id, "/", cur_dir[i, ]$id),
-                       unnest_variables = FALSE,
-                       call_tracker = call_tracker)[[2]]$variables
+      t_list <- scb_list(lang = lang, database_id = database_id,
+                         id = paste0(initial_id, "/", cur_dir[i, ]$id),
+                         unnest_variables = FALSE, 
+                         call_tracker = call_tracker)$parsed_data
+      vars <- t_list$variables
 
       # Store in cache
       vars_interpreted <- interpret_table_variables(vars)
@@ -111,8 +118,8 @@ add_directory_to_cache <- function(cache, lang, database_id, id, depth, call_tra
   # Create dummy cache to bind
   tmp_cache <- data.frame(id = paste0(id, "/", cur_dir$id),
                           depth = depth + 1, type = cur_dir$type,
-                          name = cur_dir$text, var_desc = NA,
-                          val_desc = NA, date_start = NA,
+                          name = cur_dir$text, updated = NA,
+                          var_desc = NA, val_desc = NA, date_start = NA,
                           date_end = NA, stringsAsFactors = FALSE)
 
   # Add to cache
@@ -130,10 +137,14 @@ add_directory_to_cache <- function(cache, lang, database_id, id, depth, call_tra
 
     } else if (tmp_cache[i, ]$type == "t") {
 
+      # Store updated
+      cache[cache$id == tmp_cache[i, ]$id, ]$updated <- as.POSIXct(x = cur_dir[i, ]$updated, format = "%Y-%m-%dT%H:%M:%S")
+      
       # Get variables
-      vars <- scb_list(lang = lang, database_id = database_id,
-                       id = tmp_cache[i, ]$id, unnest_variables = FALSE,
-                       call_tracker = call_tracker)[[2]]$variables
+      t_list <- scb_list(lang = lang, database_id = database_id,
+                         id = tmp_cache[i, ]$id, unnest_variables = FALSE,
+                         call_tracker = call_tracker)$parsed_data
+      vars <- t_list$variables
 
       # Store in cache
       vars_interpreted <- interpret_table_variables(vars)
