@@ -2,10 +2,9 @@ context("Caching: scb_create_cache and cache integrity")
 
 testthat::test_that("a small subset of the database can be cached and accessed", {
 
-  testthat::expect_true(is.data.frame(scb_create_cache(initial_id = "AM/AM0101")))
   scb_cache_test <- scb_create_cache(initial_id = "AM/AM0101")
-  testthat::expect_equal(scb_cache_test, scb_search(cached_database = scb_cache_test))
-  testthat::expect_equal(scb_cache_test[1, ]$id, "AM0101A")
+  testthat::expect_true(is.data.frame(scb_cache_test))
+  testthat::expect_true(nrow(scb_cache_test[grepl(pattern = "AM/AM0101", x = scb_cache_test$id), ]) > 0)
 
 })
 
@@ -13,8 +12,6 @@ testthat::test_that("the cache has all expected columns", {
 
   scb_cache_test <- scb_create_cache(initial_id = "AM/AM0101")
   testthat::expect_true("id" %in% names(scb_cache_test))
-  testthat::expect_true("depth" %in% names(scb_cache_test))
-  testthat::expect_true("type" %in% names(scb_cache_test))
   testthat::expect_true("name" %in% names(scb_cache_test))
   testthat::expect_true("var_desc" %in% names(scb_cache_test))
   testthat::expect_true("val_desc" %in% names(scb_cache_test))
