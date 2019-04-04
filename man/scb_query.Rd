@@ -17,7 +17,8 @@ code_to_query, filter = filter_type, values = c(values_to_filter))}
 \item{database_id}{ID of database; currently only "ssd"}
 }
 \value{
-data.frame containing response from \code{\link[httr]{POST}} query
+list containing status code and data.frame with response from
+  \code{\link[httr]{POST}} query
 }
 \description{
 This is essentially a wrapper for \code{\link[httr]{POST}}, with some more

@@ -21,7 +21,8 @@
 #' @param database_id ID of database; currently only "ssd"
 #' @param ... Arguments to query table with, each like: list(code =
 #'   code_to_query, filter = filter_type, values = c(values_to_filter))
-#' @return data.frame containing response from \code{\link[httr]{POST}} query
+#' @return list containing status code and data.frame with response from
+#'   \code{\link[httr]{POST}} query
 #' @examples
 #' \dontrun{
 #' scb_query(
@@ -82,11 +83,13 @@ scb_query <- function(table_id, ..., lang = "en", database_id = "ssd") {
   # Check and format response
   if (response$status_code == 200) {
 
-    output <- httr::content(response)
+    output <- list(status_code = response$status_code,
+                   parsed_data = httr::content(response))
 
   } else {
 
-    output <- paste0("Unexpected status code from POST: ", response$status_code)
+    output <- list(status_code = response$status_code,
+                   parsed_data = data.frame())
 
   }
 
