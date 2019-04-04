@@ -64,16 +64,17 @@ scb_query <- function(table_id, ..., lang = "en", database_id = "ssd") {
   main_frame$selection <- sel_frame
 
   # Add response
-  response <- list(format = "csv")
-  query_list <- list(query = main_frame, response = response)
+  response_type <- "csv"
+  response_list <- list(format = response_type)
+  query_list <- list(query = main_frame, response = response_list)
 
   # Convert to JSON
   query_json <- jsonlite::toJSON(query_list)
 
   # Correct response; API does not recognise square brackets in response format
   query_json <- stringr::str_replace(string = query_json,
-                                     pattern = "\"response\":\\{\"format\":\\[\"csv\"\\]\\}",
-                                     replacement = "\"response\":\\{\"format\":\"csv\"\\}")
+                                     pattern = paste0("\"response\":\\{\"format\":\\[\"", response_type, "\"\\]\\}"),
+                                     replacement = paste0("\"response\":\\{\"format\":\"", response_type, "\"\\}"))
 
   # Send query
   response <- httr::POST(url = api_url, body = query_json)
